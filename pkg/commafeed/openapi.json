@@ -1,0 +1,2378 @@
+{
+  "openapi" : "3.0.1",
+  "info" : {
+    "title" : "CommaFeed API"
+  },
+  "servers" : [ {
+    "url" : "rest",
+    "description" : "CommaFeed API"
+  } ],
+  "security" : [ {
+    "basicAuth" : [ ]
+  } ],
+  "paths" : {
+    "/admin/user/delete" : {
+      "post" : {
+        "tags" : [ "Admin" ],
+        "summary" : "Delete a user",
+        "description" : "Delete a user, and all his subscriptions",
+        "operationId" : "adminDeleteUser",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/IDRequest"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "default" : {
+            "description" : "default response",
+            "content" : {
+              "application/json" : { }
+            }
+          }
+        }
+      }
+    },
+    "/admin/user/get/{id}" : {
+      "get" : {
+        "tags" : [ "Admin" ],
+        "summary" : "Get user information",
+        "description" : "Get user information",
+        "operationId" : "adminGetUser",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "user id",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "responses" : {
+          "default" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/UserModel"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/user/getAll" : {
+      "get" : {
+        "tags" : [ "Admin" ],
+        "summary" : "Get all users",
+        "description" : "Get all users",
+        "operationId" : "adminGetUsers",
+        "responses" : {
+          "default" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/UserModel"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/user/save" : {
+      "post" : {
+        "tags" : [ "Admin" ],
+        "summary" : "Save or update a user",
+        "description" : "Save or update a user. If the id is not specified, a new user will be created",
+        "operationId" : "adminSaveUser",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/AdminSaveUserRequest"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "default" : {
+            "description" : "default response",
+            "content" : {
+              "application/json" : { }
+            }
+          }
+        }
+      }
+    },
+    "/admin/settings" : {
+      "get" : {
+        "tags" : [ "Admin" ],
+        "summary" : "Retrieve application settings",
+        "description" : "Retrieve application settings",
+        "operationId" : "getApplicationSettings",
+        "responses" : {
+          "default" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ApplicationSettings"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/metrics" : {
+      "get" : {
+        "tags" : [ "Admin" ],
+        "summary" : "Retrieve server metrics",
+        "operationId" : "getMetrics",
+        "responses" : {
+          "default" : {
+            "description" : "default response",
+            "content" : {
+              "application/json" : { }
+            }
+          }
+        }
+      }
+    },
+    "/category/add" : {
+      "post" : {
+        "tags" : [ "Feed categories" ],
+        "summary" : "Add a category",
+        "description" : "Add a new feed category",
+        "operationId" : "addCategory",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/AddCategoryRequest"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "default" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "integer",
+                  "format" : "int64"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/category/collapse" : {
+      "post" : {
+        "tags" : [ "Feed categories" ],
+        "summary" : "Collapse a category",
+        "description" : "Save collapsed or expanded status for a category",
+        "operationId" : "collapseCategory",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/CollapseRequest"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "default" : {
+            "description" : "default response",
+            "content" : {
+              "application/json" : { }
+            }
+          }
+        }
+      }
+    },
+    "/category/delete" : {
+      "post" : {
+        "tags" : [ "Feed categories" ],
+        "summary" : "Delete a category",
+        "description" : "Delete an existing feed category",
+        "operationId" : "deleteCategory",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/IDRequest"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "default" : {
+            "description" : "default response",
+            "content" : {
+              "application/json" : { }
+            }
+          }
+        }
+      }
+    },
+    "/category/entries" : {
+      "get" : {
+        "tags" : [ "Feed categories" ],
+        "summary" : "Get category entries",
+        "description" : "Get a list of category entries",
+        "operationId" : "getCategoryEntries",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "query",
+          "description" : "id of the category, 'all' or 'starred'",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "readType",
+          "in" : "query",
+          "description" : "all entries or only unread ones",
+          "required" : true,
+          "schema" : {
+            "type" : "string",
+            "default" : "unread",
+            "enum" : [ "all", "unread" ]
+          }
+        }, {
+          "name" : "newerThan",
+          "in" : "query",
+          "description" : "only entries newer than this",
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        }, {
+          "name" : "offset",
+          "in" : "query",
+          "description" : "offset for paging",
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32",
+            "default" : 0
+          }
+        }, {
+          "name" : "limit",
+          "in" : "query",
+          "description" : "limit for paging, default 20, maximum 1000",
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32",
+            "default" : 20
+          }
+        }, {
+          "name" : "order",
+          "in" : "query",
+          "description" : "ordering",
+          "schema" : {
+            "type" : "string",
+            "default" : "desc",
+            "enum" : [ "asc", "desc" ]
+          }
+        }, {
+          "name" : "keywords",
+          "in" : "query",
+          "description" : "search for keywords in either the title or the content of the entries, separated by spaces, 3 characters minimum",
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "onlyIds",
+          "in" : "query",
+          "description" : "return only entry ids",
+          "schema" : {
+            "type" : "boolean",
+            "default" : false
+          }
+        }, {
+          "name" : "excludedSubscriptionIds",
+          "in" : "query",
+          "description" : "comma-separated list of excluded subscription ids",
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "tag",
+          "in" : "query",
+          "description" : "keep only entries tagged with this tag",
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "default" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Entries"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/category/entriesAsFeed" : {
+      "get" : {
+        "tags" : [ "Feed categories" ],
+        "summary" : "Get category entries as feed",
+        "description" : "Get a feed of category entries",
+        "operationId" : "getCategoryEntriesAsFeed",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "query",
+          "description" : "id of the category, 'all' or 'starred'",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "readType",
+          "in" : "query",
+          "description" : "all entries or only unread ones",
+          "required" : true,
+          "schema" : {
+            "type" : "string",
+            "default" : "all",
+            "enum" : [ "all", "unread" ]
+          }
+        }, {
+          "name" : "newerThan",
+          "in" : "query",
+          "description" : "only entries newer than this",
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        }, {
+          "name" : "offset",
+          "in" : "query",
+          "description" : "offset for paging",
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32",
+            "default" : 0
+          }
+        }, {
+          "name" : "limit",
+          "in" : "query",
+          "description" : "limit for paging, default 20, maximum 1000",
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32",
+            "default" : 20
+          }
+        }, {
+          "name" : "order",
+          "in" : "query",
+          "description" : "date ordering",
+          "schema" : {
+            "type" : "string",
+            "default" : "desc",
+            "enum" : [ "asc", "desc" ]
+          }
+        }, {
+          "name" : "keywords",
+          "in" : "query",
+          "description" : "search for keywords in either the title or the content of the entries, separated by spaces, 3 characters minimum",
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "onlyIds",
+          "in" : "query",
+          "description" : "return only entry ids",
+          "schema" : {
+            "type" : "boolean",
+            "default" : false
+          }
+        }, {
+          "name" : "excludedSubscriptionIds",
+          "in" : "query",
+          "description" : "comma-separated list of excluded subscription ids",
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "tag",
+          "in" : "query",
+          "description" : "keep only entries tagged with this tag",
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "default response",
+            "content" : {
+              "application/xml" : { }
+            }
+          }
+        }
+      }
+    },
+    "/category/get" : {
+      "get" : {
+        "tags" : [ "Feed categories" ],
+        "summary" : "Get root category",
+        "description" : "Get all categories and subscriptions of the user",
+        "operationId" : "getRootCategory",
+        "responses" : {
+          "default" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Category"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/category/unreadCount" : {
+      "get" : {
+        "tags" : [ "Feed categories" ],
+        "summary" : "Get unread count for feed subscriptions",
+        "operationId" : "getUnreadCount",
+        "responses" : {
+          "default" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/UnreadCount"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/category/mark" : {
+      "post" : {
+        "tags" : [ "Feed categories" ],
+        "summary" : "Mark category entries",
+        "description" : "Mark feed entries of this category as read",
+        "operationId" : "markCategoryEntries",
+        "requestBody" : {
+          "description" : "category id, or 'all'",
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/MarkRequest"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "default" : {
+            "description" : "default response",
+            "content" : {
+              "application/json" : { }
+            }
+          }
+        }
+      }
+    },
+    "/category/modify" : {
+      "post" : {
+        "tags" : [ "Feed categories" ],
+        "summary" : "Rename a category",
+        "description" : "Rename an existing feed category",
+        "operationId" : "modifyCategory",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/CategoryModificationRequest"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "default" : {
+            "description" : "default response",
+            "content" : {
+              "application/json" : { }
+            }
+          }
+        }
+      }
+    },
+    "/entry/tags" : {
+      "get" : {
+        "tags" : [ "Feed entries" ],
+        "summary" : "Get list of tags for the user",
+        "description" : "Get list of tags for the user",
+        "operationId" : "getTags",
+        "responses" : {
+          "default" : {
+            "description" : "default response",
+            "content" : {
+              "application/json" : { }
+            }
+          }
+        }
+      }
+    },
+    "/entry/markMultiple" : {
+      "post" : {
+        "tags" : [ "Feed entries" ],
+        "summary" : "Mark multiple feed entries",
+        "description" : "Mark feed entries as read/unread",
+        "operationId" : "markEntries",
+        "requestBody" : {
+          "description" : "Multiple Mark Request",
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/MultipleMarkRequest"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "default" : {
+            "description" : "default response",
+            "content" : {
+              "application/json" : { }
+            }
+          }
+        }
+      }
+    },
+    "/entry/mark" : {
+      "post" : {
+        "tags" : [ "Feed entries" ],
+        "summary" : "Mark a feed entry",
+        "description" : "Mark a feed entry as read/unread",
+        "operationId" : "markEntry",
+        "requestBody" : {
+          "description" : "Mark Request",
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/MarkRequest"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "default" : {
+            "description" : "default response",
+            "content" : {
+              "application/json" : { }
+            }
+          }
+        }
+      }
+    },
+    "/entry/star" : {
+      "post" : {
+        "tags" : [ "Feed entries" ],
+        "summary" : "Star a feed entry",
+        "description" : "Mark a feed entry as read/unread",
+        "operationId" : "starEntry",
+        "requestBody" : {
+          "description" : "Star Request",
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/StarRequest"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "default" : {
+            "description" : "default response",
+            "content" : {
+              "application/json" : { }
+            }
+          }
+        }
+      }
+    },
+    "/entry/tag" : {
+      "post" : {
+        "tags" : [ "Feed entries" ],
+        "summary" : "Set feed entry tags",
+        "operationId" : "tagEntry",
+        "requestBody" : {
+          "description" : "Tag Request",
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/TagRequest"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "default" : {
+            "description" : "default response",
+            "content" : {
+              "application/json" : { }
+            }
+          }
+        }
+      }
+    },
+    "/feed/export" : {
+      "get" : {
+        "tags" : [ "Feeds" ],
+        "summary" : "OPML export",
+        "description" : "Export an OPML file of the user's subscriptions",
+        "operationId" : "exportOpml",
+        "responses" : {
+          "default" : {
+            "description" : "default response",
+            "content" : {
+              "application/xml" : { }
+            }
+          }
+        }
+      }
+    },
+    "/feed/fetch" : {
+      "post" : {
+        "tags" : [ "Feeds" ],
+        "summary" : "Fetch a feed",
+        "description" : "Fetch a feed by its url",
+        "operationId" : "fetchFeed",
+        "requestBody" : {
+          "description" : "feed url",
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/FeedInfoRequest"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "default" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/FeedInfo"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/feed/get/{id}" : {
+      "get" : {
+        "tags" : [ "Feeds" ],
+        "summary" : "get feed",
+        "operationId" : "getFeed",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "user id",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "responses" : {
+          "default" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Subscription"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/feed/entries" : {
+      "get" : {
+        "tags" : [ "Feeds" ],
+        "summary" : "Get feed entries",
+        "description" : "Get a list of feed entries",
+        "operationId" : "getFeedEntries",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "query",
+          "description" : "id of the feed",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "readType",
+          "in" : "query",
+          "description" : "all entries or only unread ones",
+          "required" : true,
+          "schema" : {
+            "type" : "string",
+            "default" : "unread",
+            "enum" : [ "all", "unread" ]
+          }
+        }, {
+          "name" : "newerThan",
+          "in" : "query",
+          "description" : "only entries newer than this",
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        }, {
+          "name" : "offset",
+          "in" : "query",
+          "description" : "offset for paging",
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32",
+            "default" : 0
+          }
+        }, {
+          "name" : "limit",
+          "in" : "query",
+          "description" : "limit for paging, default 20, maximum 1000",
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32",
+            "default" : 20
+          }
+        }, {
+          "name" : "order",
+          "in" : "query",
+          "description" : "ordering",
+          "schema" : {
+            "type" : "string",
+            "default" : "desc",
+            "enum" : [ "asc", "desc" ]
+          }
+        }, {
+          "name" : "keywords",
+          "in" : "query",
+          "description" : "search for keywords in either the title or the content of the entries, separated by spaces, 3 characters minimum",
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "onlyIds",
+          "in" : "query",
+          "description" : "return only entry ids",
+          "schema" : {
+            "type" : "boolean",
+            "default" : false
+          }
+        } ],
+        "responses" : {
+          "default" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Entries"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/feed/entriesAsFeed" : {
+      "get" : {
+        "tags" : [ "Feeds" ],
+        "summary" : "Get feed entries as a feed",
+        "description" : "Get a feed of feed entries",
+        "operationId" : "getFeedEntriesAsFeed",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "query",
+          "description" : "id of the feed",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "readType",
+          "in" : "query",
+          "description" : "all entries or only unread ones",
+          "required" : true,
+          "schema" : {
+            "type" : "string",
+            "default" : "all",
+            "enum" : [ "all", "unread" ]
+          }
+        }, {
+          "name" : "newerThan",
+          "in" : "query",
+          "description" : "only entries newer than this",
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        }, {
+          "name" : "offset",
+          "in" : "query",
+          "description" : "offset for paging",
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32",
+            "default" : 0
+          }
+        }, {
+          "name" : "limit",
+          "in" : "query",
+          "description" : "limit for paging, default 20, maximum 1000",
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32",
+            "default" : 20
+          }
+        }, {
+          "name" : "order",
+          "in" : "query",
+          "description" : "date ordering",
+          "schema" : {
+            "type" : "string",
+            "default" : "desc",
+            "enum" : [ "asc", "desc" ]
+          }
+        }, {
+          "name" : "keywords",
+          "in" : "query",
+          "description" : "search for keywords in either the title or the content of the entries, separated by spaces, 3 characters minimum",
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "onlyIds",
+          "in" : "query",
+          "description" : "return only entry ids",
+          "schema" : {
+            "type" : "boolean",
+            "default" : false
+          }
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "default response",
+            "content" : {
+              "application/xml" : { }
+            }
+          }
+        }
+      }
+    },
+    "/feed/favicon/{id}" : {
+      "get" : {
+        "tags" : [ "Feeds" ],
+        "summary" : "Fetch a feed's icon",
+        "description" : "Fetch a feed's icon",
+        "operationId" : "getFeedFavicon",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "description" : "subscription id",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "default response",
+            "content" : {
+              "application/json" : { }
+            }
+          }
+        }
+      }
+    },
+    "/feed/import" : {
+      "post" : {
+        "tags" : [ "Feeds" ],
+        "summary" : "OPML import",
+        "description" : "Import an OPML file, posted as a FORM with the 'file' name",
+        "operationId" : "importOpml",
+        "requestBody" : {
+          "content" : {
+            "multipart/form-data" : {
+              "schema" : {
+                "required" : [ "file" ],
+                "type" : "object",
+                "properties" : {
+                  "file" : {
+                    "type" : "object",
+                    "description" : "ompl file"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses" : {
+          "default" : {
+            "description" : "default response",
+            "content" : {
+              "application/json" : { }
+            }
+          }
+        }
+      }
+    },
+    "/feed/mark" : {
+      "post" : {
+        "tags" : [ "Feeds" ],
+        "summary" : "Mark feed entries",
+        "description" : "Mark feed entries as read (unread is not supported)",
+        "operationId" : "markFeedEntries",
+        "requestBody" : {
+          "description" : "Mark request",
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/MarkRequest"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "default" : {
+            "description" : "default response",
+            "content" : {
+              "application/json" : { }
+            }
+          }
+        }
+      }
+    },
+    "/feed/modify" : {
+      "post" : {
+        "tags" : [ "Feeds" ],
+        "summary" : "Modify a subscription",
+        "description" : "Modify a feed subscription",
+        "operationId" : "modifyFeed",
+        "requestBody" : {
+          "description" : "subscription id",
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/FeedModificationRequest"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "default" : {
+            "description" : "default response",
+            "content" : {
+              "application/json" : { }
+            }
+          }
+        }
+      }
+    },
+    "/feed/refreshAll" : {
+      "get" : {
+        "tags" : [ "Feeds" ],
+        "summary" : "Queue all feeds of the user for refresh",
+        "description" : "Manually add all feeds of the user to the refresh queue",
+        "operationId" : "queueAllForRefresh",
+        "responses" : {
+          "default" : {
+            "description" : "default response",
+            "content" : {
+              "application/json" : { }
+            }
+          }
+        }
+      }
+    },
+    "/feed/refresh" : {
+      "post" : {
+        "tags" : [ "Feeds" ],
+        "summary" : "Queue a feed for refresh",
+        "description" : "Manually add a feed to the refresh queue",
+        "operationId" : "queueForRefresh",
+        "requestBody" : {
+          "description" : "Feed id",
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/IDRequest"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "default" : {
+            "description" : "default response",
+            "content" : {
+              "application/json" : { }
+            }
+          }
+        }
+      }
+    },
+    "/feed/subscribe" : {
+      "get" : {
+        "tags" : [ "Feeds" ],
+        "summary" : "Subscribe to a feed",
+        "description" : "Subscribe to a feed",
+        "operationId" : "subscribeFromUrl",
+        "parameters" : [ {
+          "name" : "url",
+          "in" : "query",
+          "description" : "feed url",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "default response",
+            "content" : {
+              "application/json" : { }
+            }
+          }
+        }
+      },
+      "post" : {
+        "tags" : [ "Feeds" ],
+        "summary" : "Subscribe to a feed",
+        "description" : "Subscribe to a feed",
+        "operationId" : "subscribe",
+        "requestBody" : {
+          "description" : "subscription request",
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/SubscribeRequest"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "default" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "integer",
+                  "format" : "int64"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/feed/unsubscribe" : {
+      "post" : {
+        "tags" : [ "Feeds" ],
+        "summary" : "Unsubscribe from a feed",
+        "description" : "Unsubscribe from a feed",
+        "operationId" : "unsubscribe",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/IDRequest"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "default" : {
+            "description" : "default response",
+            "content" : {
+              "application/json" : { }
+            }
+          }
+        }
+      }
+    },
+    "/server/proxy" : {
+      "get" : {
+        "tags" : [ "Server" ],
+        "summary" : "proxy image",
+        "operationId" : "getProxiedImage",
+        "parameters" : [ {
+          "name" : "u",
+          "in" : "query",
+          "description" : "image url",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "default response",
+            "content" : {
+              "image/png" : { }
+            }
+          }
+        }
+      }
+    },
+    "/server/get" : {
+      "get" : {
+        "tags" : [ "Server" ],
+        "summary" : "Get server infos",
+        "description" : "Get server infos",
+        "operationId" : "getServerInfos",
+        "responses" : {
+          "default" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ServerInfo"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/user/profile/deleteAccount" : {
+      "post" : {
+        "tags" : [ "Users" ],
+        "summary" : "Delete the user account",
+        "operationId" : "deleteUser",
+        "responses" : {
+          "default" : {
+            "description" : "default response",
+            "content" : {
+              "application/json" : { }
+            }
+          }
+        }
+      }
+    },
+    "/user/profile" : {
+      "get" : {
+        "tags" : [ "Users" ],
+        "summary" : "Retrieve user's profile",
+        "operationId" : "getUserProfile",
+        "responses" : {
+          "default" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/UserModel"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post" : {
+        "tags" : [ "Users" ],
+        "summary" : "Save user's profile",
+        "operationId" : "saveUserProfile",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/ProfileModificationRequest"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "default" : {
+            "description" : "default response",
+            "content" : {
+              "application/json" : { }
+            }
+          }
+        }
+      }
+    },
+    "/user/settings" : {
+      "get" : {
+        "tags" : [ "Users" ],
+        "summary" : "Retrieve user settings",
+        "description" : "Retrieve user settings",
+        "operationId" : "getUserSettings",
+        "responses" : {
+          "default" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Settings"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post" : {
+        "tags" : [ "Users" ],
+        "summary" : "Save user settings",
+        "description" : "Save user settings",
+        "operationId" : "saveUserSettings",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/Settings"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "default" : {
+            "description" : "default response",
+            "content" : {
+              "application/json" : { }
+            }
+          }
+        }
+      }
+    },
+    "/user/login" : {
+      "post" : {
+        "tags" : [ "Users" ],
+        "summary" : "Login and create a session",
+        "operationId" : "login",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/LoginRequest"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "default" : {
+            "description" : "default response",
+            "content" : {
+              "application/json" : { }
+            }
+          }
+        }
+      }
+    },
+    "/user/passwordResetCallback" : {
+      "get" : {
+        "tags" : [ "Users" ],
+        "operationId" : "passwordRecoveryCallback",
+        "parameters" : [ {
+          "name" : "email",
+          "in" : "query",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "token",
+          "in" : "query",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "default response",
+            "content" : {
+              "text/html" : { }
+            }
+          }
+        }
+      }
+    },
+    "/user/register" : {
+      "post" : {
+        "tags" : [ "Users" ],
+        "summary" : "Register a new account",
+        "operationId" : "registerUser",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/RegistrationRequest"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "default" : {
+            "description" : "default response",
+            "content" : {
+              "application/json" : { }
+            }
+          }
+        }
+      }
+    },
+    "/user/passwordReset" : {
+      "post" : {
+        "tags" : [ "Users" ],
+        "summary" : "send a password reset email",
+        "operationId" : "sendPasswordReset",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/PasswordResetRequest"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "default" : {
+            "description" : "default response",
+            "content" : {
+              "application/json" : { }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components" : {
+    "schemas" : {
+      "IDRequest" : {
+        "required" : [ "id" ],
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        }
+      },
+      "UserModel" : {
+        "required" : [ "admin", "enabled", "id", "name" ],
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "integer",
+            "description" : "user id",
+            "format" : "int64"
+          },
+          "name" : {
+            "type" : "string",
+            "description" : "user name"
+          },
+          "email" : {
+            "type" : "string",
+            "description" : "user email, if any"
+          },
+          "apiKey" : {
+            "type" : "string",
+            "description" : "api key"
+          },
+          "password" : {
+            "type" : "string",
+            "description" : "user password, never returned by the api"
+          },
+          "enabled" : {
+            "type" : "boolean",
+            "description" : "account status"
+          },
+          "created" : {
+            "type" : "number",
+            "description" : "account creation date"
+          },
+          "lastLogin" : {
+            "type" : "number",
+            "description" : "last login date"
+          },
+          "admin" : {
+            "type" : "boolean",
+            "description" : "user is admin"
+          }
+        },
+        "description" : "User information"
+      },
+      "AdminSaveUserRequest" : {
+        "required" : [ "admin", "enabled", "name" ],
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "integer",
+            "description" : "user id",
+            "format" : "int64"
+          },
+          "name" : {
+            "type" : "string",
+            "description" : "user name"
+          },
+          "email" : {
+            "type" : "string",
+            "description" : "user email, if any"
+          },
+          "password" : {
+            "type" : "string",
+            "description" : "user password"
+          },
+          "enabled" : {
+            "type" : "boolean",
+            "description" : "account status"
+          },
+          "admin" : {
+            "type" : "boolean",
+            "description" : "user is admin"
+          }
+        },
+        "description" : "Save User information"
+      },
+      "ApplicationSettings" : {
+        "required" : [ "allowRegistrations", "backgroundThreads", "cache", "createDemoAccount", "databaseCleanupBatchSize", "databaseUpdateThreads", "heavyLoad", "hideFromWebCrawlers", "imageProxyEnabled", "keepStatusDays", "maxEntriesAgeDays", "maxFeedCapacity", "maxFeedsPerUser", "publicUrl", "queryTimeout", "refreshIntervalMinutes", "strictPasswordPolicy" ],
+        "type" : "object",
+        "properties" : {
+          "publicUrl" : {
+            "type" : "string"
+          },
+          "hideFromWebCrawlers" : {
+            "type" : "boolean"
+          },
+          "allowRegistrations" : {
+            "type" : "boolean"
+          },
+          "strictPasswordPolicy" : {
+            "type" : "boolean"
+          },
+          "createDemoAccount" : {
+            "type" : "boolean"
+          },
+          "googleAnalyticsTrackingCode" : {
+            "type" : "string"
+          },
+          "googleAuthKey" : {
+            "type" : "string"
+          },
+          "backgroundThreads" : {
+            "minimum" : 1,
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "databaseUpdateThreads" : {
+            "minimum" : 1,
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "databaseCleanupBatchSize" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "smtpHost" : {
+            "type" : "string"
+          },
+          "smtpPort" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "smtpTls" : {
+            "type" : "boolean"
+          },
+          "smtpUserName" : {
+            "type" : "string"
+          },
+          "smtpPassword" : {
+            "type" : "string"
+          },
+          "smtpFromAddress" : {
+            "type" : "string"
+          },
+          "graphiteEnabled" : {
+            "type" : "boolean"
+          },
+          "graphitePrefix" : {
+            "type" : "string"
+          },
+          "graphiteHost" : {
+            "type" : "string"
+          },
+          "graphitePort" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "graphiteInterval" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "heavyLoad" : {
+            "type" : "boolean"
+          },
+          "imageProxyEnabled" : {
+            "type" : "boolean"
+          },
+          "queryTimeout" : {
+            "minimum" : 0,
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "keepStatusDays" : {
+            "minimum" : 0,
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "maxFeedCapacity" : {
+            "minimum" : 0,
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "maxEntriesAgeDays" : {
+            "minimum" : 0,
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "maxFeedsPerUser" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "refreshIntervalMinutes" : {
+            "minimum" : 0,
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "cache" : {
+            "type" : "string",
+            "enum" : [ "NOOP", "REDIS" ]
+          },
+          "announcement" : {
+            "type" : "string"
+          },
+          "userAgent" : {
+            "type" : "string"
+          },
+          "websocketEnabled" : {
+            "type" : "boolean"
+          },
+          "websocketPingInterval" : {
+            "type" : "string"
+          },
+          "treeReloadInterval" : {
+            "type" : "string"
+          },
+          "unreadThreshold" : {
+            "type" : "string",
+            "format" : "date-time"
+          }
+        }
+      },
+      "AddCategoryRequest" : {
+        "required" : [ "name" ],
+        "type" : "object",
+        "properties" : {
+          "name" : {
+            "maxLength" : 128,
+            "minLength" : 0,
+            "type" : "string",
+            "description" : "name"
+          },
+          "parentId" : {
+            "maxLength" : 128,
+            "minLength" : 0,
+            "type" : "string",
+            "description" : "parent category id, if any"
+          }
+        },
+        "description" : "Add Category Request"
+      },
+      "CollapseRequest" : {
+        "required" : [ "collapse", "id" ],
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "integer",
+            "description" : "category id",
+            "format" : "int64"
+          },
+          "collapse" : {
+            "type" : "boolean",
+            "description" : "collapse"
+          }
+        },
+        "description" : "Mark Request"
+      },
+      "Entries" : {
+        "required" : [ "entries", "errorCount", "hasMore", "ignoredReadStatus", "name", "timestamp" ],
+        "type" : "object",
+        "properties" : {
+          "name" : {
+            "type" : "string",
+            "description" : "name of the feed or the category requested"
+          },
+          "message" : {
+            "type" : "string",
+            "description" : "error or warning message"
+          },
+          "errorCount" : {
+            "type" : "integer",
+            "description" : "times the server tried to refresh the feed and failed",
+            "format" : "int32"
+          },
+          "feedLink" : {
+            "type" : "string",
+            "description" : "URL of the website, extracted from the feed, only filled if querying for feed entries, not category entries"
+          },
+          "timestamp" : {
+            "type" : "integer",
+            "description" : "list generation timestamp",
+            "format" : "int64"
+          },
+          "hasMore" : {
+            "type" : "boolean",
+            "description" : "if the query has more elements"
+          },
+          "offset" : {
+            "type" : "integer",
+            "description" : "the requested offset",
+            "format" : "int32"
+          },
+          "limit" : {
+            "type" : "integer",
+            "description" : "the requested limit",
+            "format" : "int32"
+          },
+          "entries" : {
+            "type" : "array",
+            "description" : "list of entries",
+            "items" : {
+              "$ref" : "#/components/schemas/Entry"
+            }
+          },
+          "ignoredReadStatus" : {
+            "type" : "boolean",
+            "description" : "if true, the unread flag was ignored in the request, all entries are returned regardless of their read status"
+          }
+        },
+        "description" : "List of entries with some metadata"
+      },
+      "Entry" : {
+        "required" : [ "content", "date", "feedId", "feedLink", "feedName", "feedUrl", "guid", "iconUrl", "id", "insertedDate", "markable", "read", "rtl", "starred", "tags", "title", "url" ],
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "string",
+            "description" : "entry id"
+          },
+          "guid" : {
+            "type" : "string",
+            "description" : "entry guid"
+          },
+          "title" : {
+            "type" : "string",
+            "description" : "entry title"
+          },
+          "content" : {
+            "type" : "string",
+            "description" : "entry content"
+          },
+          "categories" : {
+            "type" : "string",
+            "description" : "comma-separated list of categories"
+          },
+          "rtl" : {
+            "type" : "boolean",
+            "description" : "whether entry content and title are rtl"
+          },
+          "author" : {
+            "type" : "string",
+            "description" : "entry author"
+          },
+          "enclosureUrl" : {
+            "type" : "string",
+            "description" : "entry enclosure url, if any"
+          },
+          "enclosureType" : {
+            "type" : "string",
+            "description" : "entry enclosure mime type, if any"
+          },
+          "mediaDescription" : {
+            "type" : "string",
+            "description" : "entry media description, if any"
+          },
+          "mediaThumbnailUrl" : {
+            "type" : "string",
+            "description" : "entry media thumbnail url, if any"
+          },
+          "mediaThumbnailWidth" : {
+            "type" : "integer",
+            "description" : "entry media thumbnail width, if any",
+            "format" : "int32"
+          },
+          "mediaThumbnailHeight" : {
+            "type" : "integer",
+            "description" : "entry media thumbnail height, if any",
+            "format" : "int32"
+          },
+          "date" : {
+            "type" : "number",
+            "description" : "entry publication date"
+          },
+          "insertedDate" : {
+            "type" : "number",
+            "description" : "entry insertion date in the database"
+          },
+          "feedId" : {
+            "type" : "string",
+            "description" : "feed id"
+          },
+          "feedName" : {
+            "type" : "string",
+            "description" : "feed name"
+          },
+          "feedUrl" : {
+            "type" : "string",
+            "description" : "this entry's feed url"
+          },
+          "feedLink" : {
+            "type" : "string",
+            "description" : "this entry's website url"
+          },
+          "iconUrl" : {
+            "type" : "string",
+            "description" : "The favicon url to use for this feed"
+          },
+          "url" : {
+            "type" : "string",
+            "description" : "entry url"
+          },
+          "read" : {
+            "type" : "boolean",
+            "description" : "read status"
+          },
+          "starred" : {
+            "type" : "boolean",
+            "description" : "starred status"
+          },
+          "markable" : {
+            "type" : "boolean",
+            "description" : "whether the entry is still markable (old entry statuses are discarded)"
+          },
+          "tags" : {
+            "type" : "array",
+            "description" : "tags",
+            "items" : {
+              "type" : "string",
+              "description" : "tags"
+            }
+          }
+        },
+        "description" : "Entry details"
+      },
+      "Category" : {
+        "required" : [ "children", "expanded", "feeds", "id", "name", "position" ],
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "string",
+            "description" : "category id"
+          },
+          "parentId" : {
+            "type" : "string",
+            "description" : "parent category id"
+          },
+          "parentName" : {
+            "type" : "string",
+            "description" : "parent category name"
+          },
+          "name" : {
+            "type" : "string",
+            "description" : "category id"
+          },
+          "children" : {
+            "type" : "array",
+            "description" : "category children categories",
+            "items" : {
+              "$ref" : "#/components/schemas/Category"
+            }
+          },
+          "feeds" : {
+            "type" : "array",
+            "description" : "category feeds",
+            "items" : {
+              "$ref" : "#/components/schemas/Subscription"
+            }
+          },
+          "expanded" : {
+            "type" : "boolean",
+            "description" : "whether the category is expanded or collapsed"
+          },
+          "position" : {
+            "type" : "integer",
+            "description" : "position of the category in the list",
+            "format" : "int32"
+          }
+        },
+        "description" : "Entry details"
+      },
+      "Subscription" : {
+        "required" : [ "errorCount", "feedLink", "feedUrl", "iconUrl", "id", "name", "unread" ],
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "integer",
+            "description" : "subscription id",
+            "format" : "int64"
+          },
+          "name" : {
+            "type" : "string",
+            "description" : "subscription name"
+          },
+          "message" : {
+            "type" : "string",
+            "description" : "error message while fetching the feed"
+          },
+          "errorCount" : {
+            "type" : "integer",
+            "description" : "error count",
+            "format" : "int32"
+          },
+          "lastRefresh" : {
+            "type" : "number",
+            "description" : "last time the feed was refreshed"
+          },
+          "nextRefresh" : {
+            "type" : "number",
+            "description" : "next time the feed refresh is planned, null if refresh is already queued"
+          },
+          "feedUrl" : {
+            "type" : "string",
+            "description" : "this subscription's feed url"
+          },
+          "feedLink" : {
+            "type" : "string",
+            "description" : "this subscription's website url"
+          },
+          "iconUrl" : {
+            "type" : "string",
+            "description" : "The favicon url to use for this feed"
+          },
+          "unread" : {
+            "type" : "integer",
+            "description" : "unread count",
+            "format" : "int64"
+          },
+          "categoryId" : {
+            "type" : "string",
+            "description" : "category id"
+          },
+          "position" : {
+            "type" : "integer",
+            "description" : "position of the subscription's in the list",
+            "format" : "int32"
+          },
+          "newestItemTime" : {
+            "type" : "number",
+            "description" : "date of the newest item"
+          },
+          "filter" : {
+            "type" : "string",
+            "description" : "JEXL string evaluated on new entries to mark them as read if they do not match"
+          }
+        },
+        "description" : "User information"
+      },
+      "UnreadCount" : {
+        "type" : "object",
+        "properties" : {
+          "feedId" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "unreadCount" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "newestItemTime" : {
+            "type" : "number"
+          }
+        },
+        "description" : "Unread count"
+      },
+      "MarkRequest" : {
+        "required" : [ "id", "read" ],
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "maxLength" : 128,
+            "minLength" : 0,
+            "type" : "string",
+            "description" : "entry id, category id, 'all' or 'starred'"
+          },
+          "read" : {
+            "type" : "boolean",
+            "description" : "mark as read or unread"
+          },
+          "olderThan" : {
+            "type" : "integer",
+            "description" : "mark only entries older than this",
+            "format" : "int64"
+          },
+          "insertedBefore" : {
+            "type" : "integer",
+            "description" : "pass the timestamp you got from the entry list to avoid marking entries that may have been fetched in the mean time and never displayed",
+            "format" : "int64"
+          },
+          "keywords" : {
+            "maxLength" : 128,
+            "minLength" : 0,
+            "type" : "string",
+            "description" : "only mark read if a feed has these keywords in the title or rss content"
+          },
+          "excludedSubscriptions" : {
+            "type" : "array",
+            "description" : "if marking a category or 'all', exclude those subscriptions from the marking",
+            "items" : {
+              "type" : "integer",
+              "description" : "if marking a category or 'all', exclude those subscriptions from the marking",
+              "format" : "int64"
+            }
+          }
+        },
+        "description" : "Mark Request"
+      },
+      "CategoryModificationRequest" : {
+        "required" : [ "id" ],
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "integer",
+            "description" : "id",
+            "format" : "int64"
+          },
+          "name" : {
+            "maxLength" : 128,
+            "minLength" : 0,
+            "type" : "string",
+            "description" : "new name, null if not changed"
+          },
+          "parentId" : {
+            "maxLength" : 128,
+            "minLength" : 0,
+            "type" : "string",
+            "description" : "new parent category id"
+          },
+          "position" : {
+            "type" : "integer",
+            "description" : "new display position, null if not changed",
+            "format" : "int32"
+          }
+        },
+        "description" : "Category modification request"
+      },
+      "MultipleMarkRequest" : {
+        "required" : [ "requests" ],
+        "type" : "object",
+        "properties" : {
+          "requests" : {
+            "type" : "array",
+            "description" : "list of mark requests",
+            "items" : {
+              "$ref" : "#/components/schemas/MarkRequest"
+            }
+          }
+        },
+        "description" : "Multiple Mark Request"
+      },
+      "StarRequest" : {
+        "required" : [ "feedId", "id", "starred" ],
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "maxLength" : 128,
+            "minLength" : 0,
+            "type" : "string",
+            "description" : "id"
+          },
+          "feedId" : {
+            "type" : "integer",
+            "description" : "feed id",
+            "format" : "int64"
+          },
+          "starred" : {
+            "type" : "boolean",
+            "description" : "starred or not"
+          }
+        },
+        "description" : "Star Request"
+      },
+      "TagRequest" : {
+        "required" : [ "entryId", "tags" ],
+        "type" : "object",
+        "properties" : {
+          "entryId" : {
+            "type" : "integer",
+            "description" : "entry id",
+            "format" : "int64"
+          },
+          "tags" : {
+            "type" : "array",
+            "description" : "tags",
+            "items" : {
+              "type" : "string",
+              "description" : "tags"
+            }
+          }
+        },
+        "description" : "Tag Request"
+      },
+      "FeedInfo" : {
+        "required" : [ "title", "url" ],
+        "type" : "object",
+        "properties" : {
+          "url" : {
+            "type" : "string",
+            "description" : "url"
+          },
+          "title" : {
+            "type" : "string",
+            "description" : "title"
+          }
+        },
+        "description" : "Feed details"
+      },
+      "FeedInfoRequest" : {
+        "required" : [ "url" ],
+        "type" : "object",
+        "properties" : {
+          "url" : {
+            "maxLength" : 4096,
+            "minLength" : 0,
+            "type" : "string",
+            "description" : "feed url"
+          }
+        },
+        "description" : "Feed information request"
+      },
+      "FeedModificationRequest" : {
+        "required" : [ "id" ],
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "integer",
+            "description" : "id",
+            "format" : "int64"
+          },
+          "name" : {
+            "maxLength" : 128,
+            "minLength" : 0,
+            "type" : "string",
+            "description" : "new name, null if not changed"
+          },
+          "categoryId" : {
+            "maxLength" : 128,
+            "minLength" : 0,
+            "type" : "string",
+            "description" : "new parent category id"
+          },
+          "position" : {
+            "type" : "integer",
+            "description" : "new display position, null if not changed",
+            "format" : "int32"
+          },
+          "filter" : {
+            "maxLength" : 4096,
+            "minLength" : 0,
+            "type" : "string",
+            "description" : "JEXL string evaluated on new entries to mark them as read if they do not match"
+          }
+        },
+        "description" : "Feed modification request"
+      },
+      "SubscribeRequest" : {
+        "required" : [ "title", "url" ],
+        "type" : "object",
+        "properties" : {
+          "url" : {
+            "maxLength" : 4096,
+            "minLength" : 0,
+            "type" : "string",
+            "description" : "url of the feed"
+          },
+          "title" : {
+            "maxLength" : 128,
+            "minLength" : 0,
+            "type" : "string",
+            "description" : "name of the feed for the user"
+          },
+          "categoryId" : {
+            "maxLength" : 128,
+            "minLength" : 0,
+            "type" : "string",
+            "description" : "id of the user category to place the feed in"
+          }
+        },
+        "description" : "Subscription request"
+      },
+      "ServerInfo" : {
+        "required" : [ "allowRegistrations", "demoAccountEnabled", "gitCommit", "smtpEnabled", "treeReloadInterval", "version", "websocketEnabled", "websocketPingInterval" ],
+        "type" : "object",
+        "properties" : {
+          "announcement" : {
+            "type" : "string"
+          },
+          "version" : {
+            "type" : "string"
+          },
+          "gitCommit" : {
+            "type" : "string"
+          },
+          "allowRegistrations" : {
+            "type" : "boolean"
+          },
+          "googleAnalyticsCode" : {
+            "type" : "string"
+          },
+          "smtpEnabled" : {
+            "type" : "boolean"
+          },
+          "demoAccountEnabled" : {
+            "type" : "boolean"
+          },
+          "websocketEnabled" : {
+            "type" : "boolean"
+          },
+          "websocketPingInterval" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "treeReloadInterval" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        },
+        "description" : "Server infos"
+      },
+      "Settings" : {
+        "required" : [ "customContextMenu", "externalLinkIconDisplayMode", "language", "markAllAsReadConfirmation", "mobileFooter", "readingMode", "readingOrder", "scrollMarks", "scrollMode", "scrollSpeed", "sharingSettings", "showRead", "starIconDisplayMode" ],
+        "type" : "object",
+        "properties" : {
+          "language" : {
+            "type" : "string",
+            "description" : "user's preferred language, english if none"
+          },
+          "readingMode" : {
+            "type" : "string",
+            "description" : "user reads all entries or unread entries only",
+            "enum" : [ "all,unread" ]
+          },
+          "readingOrder" : {
+            "type" : "string",
+            "description" : "user reads entries in ascending or descending order",
+            "enum" : [ "asc,desc" ]
+          },
+          "showRead" : {
+            "type" : "boolean",
+            "description" : "user wants category and feeds with no unread entries shown"
+          },
+          "scrollMarks" : {
+            "type" : "boolean",
+            "description" : "In expanded view, scroll through entries mark them as read"
+          },
+          "customCss" : {
+            "type" : "string",
+            "description" : "user's custom css for the website"
+          },
+          "customJs" : {
+            "type" : "string",
+            "description" : "user's custom js for the website"
+          },
+          "scrollSpeed" : {
+            "type" : "integer",
+            "description" : "user's preferred scroll speed when navigating between entries",
+            "format" : "int32"
+          },
+          "scrollMode" : {
+            "type" : "string",
+            "description" : "whether to scroll to the selected entry",
+            "enum" : [ "always,never,if_needed" ]
+          },
+          "starIconDisplayMode" : {
+            "type" : "string",
+            "description" : "whether to show the star icon in the header of entries",
+            "enum" : [ "always,never,on_desktop,on_mobile" ]
+          },
+          "externalLinkIconDisplayMode" : {
+            "type" : "string",
+            "description" : "whether to show the external link icon in the header of entries",
+            "enum" : [ "always,never,on_desktop,on_mobile" ]
+          },
+          "markAllAsReadConfirmation" : {
+            "type" : "boolean",
+            "description" : "ask for confirmation when marking all entries as read"
+          },
+          "customContextMenu" : {
+            "type" : "boolean",
+            "description" : "show commafeed's own context menu on right click"
+          },
+          "mobileFooter" : {
+            "type" : "boolean",
+            "description" : "on mobile, show action buttons at the bottom of the screen"
+          },
+          "sharingSettings" : {
+            "$ref" : "#/components/schemas/SharingSettings"
+          }
+        },
+        "description" : "User settings"
+      },
+      "SharingSettings" : {
+        "required" : [ "buffer", "email", "facebook", "gmail", "instapaper", "pocket", "tumblr", "twitter" ],
+        "type" : "object",
+        "properties" : {
+          "email" : {
+            "type" : "boolean"
+          },
+          "gmail" : {
+            "type" : "boolean"
+          },
+          "facebook" : {
+            "type" : "boolean"
+          },
+          "twitter" : {
+            "type" : "boolean"
+          },
+          "tumblr" : {
+            "type" : "boolean"
+          },
+          "pocket" : {
+            "type" : "boolean"
+          },
+          "instapaper" : {
+            "type" : "boolean"
+          },
+          "buffer" : {
+            "type" : "boolean"
+          }
+        },
+        "description" : "User sharing settings"
+      },
+      "LoginRequest" : {
+        "required" : [ "name", "password" ],
+        "type" : "object",
+        "properties" : {
+          "name" : {
+            "maxLength" : 32,
+            "minLength" : 3,
+            "type" : "string",
+            "description" : "username"
+          },
+          "password" : {
+            "maxLength" : 128,
+            "minLength" : 0,
+            "type" : "string",
+            "description" : "password"
+          }
+        }
+      },
+      "RegistrationRequest" : {
+        "required" : [ "email", "name", "password" ],
+        "type" : "object",
+        "properties" : {
+          "name" : {
+            "maxLength" : 32,
+            "minLength" : 3,
+            "type" : "string",
+            "description" : "username, between 3 and 32 characters"
+          },
+          "password" : {
+            "type" : "string",
+            "description" : "password, minimum 6 characters"
+          },
+          "email" : {
+            "maxLength" : 255,
+            "minLength" : 0,
+            "type" : "string",
+            "description" : "email address for password recovery"
+          }
+        }
+      },
+      "ProfileModificationRequest" : {
+        "required" : [ "currentPassword" ],
+        "type" : "object",
+        "properties" : {
+          "currentPassword" : {
+            "maxLength" : 128,
+            "minLength" : 0,
+            "type" : "string",
+            "description" : "current user password, required to change profile data"
+          },
+          "email" : {
+            "maxLength" : 255,
+            "minLength" : 0,
+            "type" : "string",
+            "description" : "changes email of the user, if specified"
+          },
+          "newPassword" : {
+            "type" : "string",
+            "description" : "changes password of the user, if specified"
+          },
+          "newApiKey" : {
+            "type" : "boolean",
+            "description" : "generate a new api key"
+          }
+        },
+        "description" : "Profile modification request"
+      },
+      "PasswordResetRequest" : {
+        "required" : [ "email" ],
+        "type" : "object",
+        "properties" : {
+          "email" : {
+            "maxLength" : 255,
+            "minLength" : 0,
+            "type" : "string",
+            "description" : "email address for password recovery"
+          }
+        }
+      }
+    },
+    "securitySchemes" : {
+      "basicAuth" : {
+        "type" : "http",
+        "scheme" : "basic"
+      }
+    }
+  }
+}

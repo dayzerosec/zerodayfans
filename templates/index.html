@@ -1,0 +1,72 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="/static/main.css">
+    <meta property="og:title" content="{{.Output.Title}}">
+    <meta property="og:description" content="">
+    <meta property="og:image" content="/static/0dayfans-big.png">
+    <meta name="theme-color" content="#00AFF0">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta property="og:type" content="photo">
+    <link type="application/json+oembed" href="/static/oembed.json" />
+    <link rel="icon" type="image/png" href="{{.Output.DefaultFavicon}}">
+    <script>
+        let DEFAULT_AVATAR = "{{.Output.DefaultFavicon}}";
+    </script>
+
+    {{if .Output.RssFile}}
+    <link rel="alternate" type="application/rss+xml" title="0day Fans RSS" href="{{.Output.RssFile}}">
+    {{end}}
+    {{if .Output.AtomFile}}
+    <link rel="alternate" type="application/atom+xml" title="0day Fans Atom" href="{{.Output.AtomFile}}">
+    {{end}}
+    {{if .Output.JsonFile}}
+    <link rel="alternate" type="application/json" title="0day Fans JSON" href="{{.Output.JsonFile}}">
+    {{end}}
+
+</head>
+<body>
+<header>
+    <div class="container">
+        <nav class="header__menu"><img src="/static/0dayfans.png" height="35px"></nav>
+    </div>
+</header>
+<main id="content">
+    <div class="container">
+        <div class="page__header">
+            <div class="tab__container">
+                <div class="tab__item">Home</div>
+                <div class="tab__item">&nbsp;</div>
+            </div>
+        </div>
+        <div class="feed__wrapper">
+            <div class="feed">
+                <div class="user-posts">
+                    <div class="feed__side">
+                        <div class="feed__side-column">
+                            {{range .Sidebar}}
+                            <div class="section-title">{{.Title}}</div>
+                            <div class="blog-wrapper">
+                                {{range .Links}}
+                                <div class="blog-entry">
+                                    <a href="{{index . 1}}">
+                                        <div class="blog-title">{{index . 0}}</div>
+                                    </a>
+                                </div>
+                                {{end}}
+                            </div>
+                            {{end}}
+                        </div>
+                    </div>
+
+                    {{range .Entries}}
+                        {{template "post.tmpl" .}}
+                    {{end}}
+
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+</body>
+</html>

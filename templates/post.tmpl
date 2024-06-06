@@ -1,0 +1,43 @@
+<div class="post-wrapper">
+    <div class="post__header">
+        <span class="post__avatar">
+            <a href="{{.Publisher.Url}}">
+                <img onerror="this.onerror=null;this.src=DEFAULT_AVATAR" height="50" width="50" src="{{.Publisher.Image}}" alt="">
+            </a>
+        </span>
+        <div class="username-row m-gap-lg">
+            <a class="username m-md-size g-user-realname" href="{{.Publisher.Url}}">
+                {{.Publisher.Name}}
+            </a>
+            <div class="post__details">
+                <span class="post__date" title="{{.Feed.Date}}">{{time .Feed.Date}}</span>
+            </div>
+        </div>
+        <div class="username-row">
+        {{if .Author.Url}}
+            <a class="username g-user-username" href="{{.Author.Url}}">{{.Author.Name}}</a>
+        {{else}}
+            <span class="username g-user-username">{{.Author.Name}}</span>
+        {{end}}
+        </div>
+    </div>
+    <div class="post__text">
+        <div class="post__title">
+            <a href="{{.Page.Url}}">{{.Page.Title}}</a>
+        </div>
+        {{if .Page.Description}}
+            {{.Page.Description}}
+        {{else}}
+            {{truncate .Page.Content 300}}
+        {{end}}
+    </div>
+    <div class="post__footer">
+        <div class="post__image">
+            {{if .Page.Image}}
+            <a href="{{.Page.Url}}">
+                <img src="{{.Page.Image}}" alt="">
+            </a>
+            {{end}}
+        </div>
+    </div>
+</div>

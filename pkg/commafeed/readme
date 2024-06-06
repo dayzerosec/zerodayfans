@@ -1,0 +1,3 @@
+Save OpenAPI definition from <commafeed instance>/openapi.json to `./openapi.json`
+Run `go install github.com/deepmap/oapi-codegen/cmd/oapi-codegen@latest`
+Run `oapi-codegen -package commafeed -o commafeed.gen.go openapi.json`
