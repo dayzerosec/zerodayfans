@@ -18,6 +18,7 @@ import (
 func getFeedEntries() []commafeed.Entry {
 	ctx := context.Background()
 	c, _ := config.Cfg.Commafeed.Client()
+
 	_ = commafeed_util.Login(ctx, c)
 
 	opts := commafeed_util.GetEntriesOptions{
@@ -48,7 +49,12 @@ func getFeedEntries() []commafeed.Entry {
 		// which will allow commafeed to return only the entries that will make the cut for the feed
 		if len(mergedEntries) > config.Cfg.MaxEntries {
 			mergedEntries = mergedEntries[:config.Cfg.MaxEntries]
-			opts.NewerThan = time.UnixMilli(int64(mergedEntries[len(mergedEntries)-1].Date))
+			newerThan, err := time.Parse(time.RFC3339, mergedEntries[len(mergedEntries)-1].Date)
+			if err != nil {
+				log.Printf("[MaxEntries] Failed to parse Date: %s: %v", mergedEntries[len(mergedEntries)-1].Date, err)
+			} else {
+				opts.NewerThan = newerThan
+			}
 		}
 	}
 
@@ -118,10 +124,16 @@ func Generate(forceRebuild bool) bool {
 		return false
 	}
 
+	var err error
 	var rawFeed []*enrichment.EnrichedData
 	feed := createEmptyFeed()
-	feed.Updated = time.UnixMilli(int64(entries[0].Date))
-	feed.Created = time.UnixMilli(int64(entries[0].Date))
+
+	feed.Updated, err = time.Parse(time.RFC3339, entries[0].Date)
+	if err != nil {
+		log.Printf("ERROR: [generate] Failed to parse updated date: %s: %v", entries[0].Date, err)
+		return false
+	}
+	feed.Created = feed.Updated
 
 	for _, e := range entries {
 		enriched, err := enrichment.Enrich(e)

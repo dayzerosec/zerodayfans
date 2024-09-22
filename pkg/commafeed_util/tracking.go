@@ -22,16 +22,18 @@ var TrackedFeeds []trackedFeedEntry
 var rootCategory *commafeed.Category
 
 func Login(ctx context.Context, client *commafeed.ClientWithResponses) error {
-	res, err := client.LoginWithResponse(ctx, commafeed.LoginJSONRequestBody{
-		Name:     config.Cfg.Commafeed.Username,
-		Password: config.Cfg.Commafeed.Password,
-	})
-	if err != nil {
-		return err
-	}
-	if res.StatusCode() != http.StatusOK {
-		return fmt.Errorf("unexpected status code (%d)", res.StatusCode())
-	}
+	/*
+		res, err := client.LoginWithResponse(ctx, commafeed.LoginJSONRequestBody{
+			Name:     config.Cfg.Commafeed.Username,
+			Password: config.Cfg.Commafeed.Password,
+		})
+		if err != nil {
+			return err
+		}
+		if res.StatusCode() != http.StatusOK {
+			return fmt.Errorf("unexpected status code (%d)", res.StatusCode())
+		}
+	*/
 	return nil
 }
 

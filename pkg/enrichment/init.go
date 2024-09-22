@@ -127,7 +127,12 @@ func getBaseEnrichment(target string) (out *EnrichedData, err error) {
 }
 
 func doFeedEnrichment(enriched *EnrichedData, e commafeed.Entry) {
-	enriched.Feed.Date = time.UnixMilli(int64(e.Date))
+	var err error
+	enriched.Feed.Date, err = time.Parse(time.RFC3339, e.Date)
+	if err != nil {
+		log.Printf("Error parsing date: %v", err)
+	}
+
 	enriched.Feed.Title = e.Title
 	enriched.Feed.Source = e.FeedUrl
 

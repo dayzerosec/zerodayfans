@@ -127,8 +127,10 @@ func dailyLimitReached(newEntry commafeed.Entry, entries []commafeed.Entry, limi
 	}
 
 	lastEntries := entries[len(entries)-limit:]
-	pastTime := time.UnixMilli(int64(lastEntries[0].Date))
-	newTime := time.UnixMilli(int64(newEntry.Date))
+	pastTime, _ := time.Parse(time.RFC3339, lastEntries[0].Date)
+	newTime, _ := time.Parse(time.RFC3339, newEntry.Date)
+	//pastTime := time.UnixMilli(int64(lastEntries[0].Date))
+	//newTime := time.UnixMilli(int64(newEntry.Date))
 
 	// Since processing in descending order, pastTime is technically the newer time
 	delta := pastTime.Sub(newTime)
