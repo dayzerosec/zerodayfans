@@ -15,7 +15,6 @@ import (
 	"net/url"
 	"path"
 	"strings"
-	"time"
 
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/labstack/echo/v4"
@@ -24,12 +23,6 @@ import (
 
 const (
 	BasicAuthScopes = "basicAuth.Scopes"
-)
-
-// Defines values for ApplicationSettingsCache.
-const (
-	NOOP  ApplicationSettingsCache = "NOOP"
-	REDIS ApplicationSettingsCache = "REDIS"
 )
 
 // Defines values for SettingsExternalLinkIconDisplayMode.
@@ -135,49 +128,6 @@ type AdminSaveUserRequest struct {
 	Password *string `json:"password,omitempty"`
 }
 
-// ApplicationSettings defines model for ApplicationSettings.
-type ApplicationSettings struct {
-	AllowRegistrations          bool                     `json:"allowRegistrations"`
-	Announcement                *string                  `json:"announcement,omitempty"`
-	BackgroundThreads           int32                    `json:"backgroundThreads"`
-	Cache                       ApplicationSettingsCache `json:"cache"`
-	CreateDemoAccount           bool                     `json:"createDemoAccount"`
-	DatabaseCleanupBatchSize    int32                    `json:"databaseCleanupBatchSize"`
-	DatabaseUpdateThreads       int32                    `json:"databaseUpdateThreads"`
-	GoogleAnalyticsTrackingCode *string                  `json:"googleAnalyticsTrackingCode,omitempty"`
-	GoogleAuthKey               *string                  `json:"googleAuthKey,omitempty"`
-	GraphiteEnabled             *bool                    `json:"graphiteEnabled,omitempty"`
-	GraphiteHost                *string                  `json:"graphiteHost,omitempty"`
-	GraphiteInterval            *int32                   `json:"graphiteInterval,omitempty"`
-	GraphitePort                *int32                   `json:"graphitePort,omitempty"`
-	GraphitePrefix              *string                  `json:"graphitePrefix,omitempty"`
-	HeavyLoad                   bool                     `json:"heavyLoad"`
-	HideFromWebCrawlers         bool                     `json:"hideFromWebCrawlers"`
-	ImageProxyEnabled           bool                     `json:"imageProxyEnabled"`
-	KeepStatusDays              int32                    `json:"keepStatusDays"`
-	MaxEntriesAgeDays           int32                    `json:"maxEntriesAgeDays"`
-	MaxFeedCapacity             int32                    `json:"maxFeedCapacity"`
-	MaxFeedsPerUser             int32                    `json:"maxFeedsPerUser"`
-	PublicUrl                   string                   `json:"publicUrl"`
-	QueryTimeout                int32                    `json:"queryTimeout"`
-	RefreshIntervalMinutes      int32                    `json:"refreshIntervalMinutes"`
-	SmtpFromAddress             *string                  `json:"smtpFromAddress,omitempty"`
-	SmtpHost                    *string                  `json:"smtpHost,omitempty"`
-	SmtpPassword                *string                  `json:"smtpPassword,omitempty"`
-	SmtpPort                    *int32                   `json:"smtpPort,omitempty"`
-	SmtpTls                     *bool                    `json:"smtpTls,omitempty"`
-	SmtpUserName                *string                  `json:"smtpUserName,omitempty"`
-	StrictPasswordPolicy        bool                     `json:"strictPasswordPolicy"`
-	TreeReloadInterval          *string                  `json:"treeReloadInterval,omitempty"`
-	UnreadThreshold             *time.Time               `json:"unreadThreshold,omitempty"`
-	UserAgent                   *string                  `json:"userAgent,omitempty"`
-	WebsocketEnabled            *bool                    `json:"websocketEnabled,omitempty"`
-	WebsocketPingInterval       *string                  `json:"websocketPingInterval,omitempty"`
-}
-
-// ApplicationSettingsCache defines model for ApplicationSettings.Cache.
-type ApplicationSettingsCache string
-
 // Category Entry details
 type Category struct {
 	// Children category children categories
@@ -274,7 +224,7 @@ type Entry struct {
 	Content string `json:"content"`
 
 	// Date entry publication date
-	Date float32 `json:"date"`
+	Date string `json:"date"`
 
 	// EnclosureType entry enclosure mime type, if any
 	EnclosureType *string `json:"enclosureType,omitempty"`
@@ -304,7 +254,7 @@ type Entry struct {
 	Id string `json:"id"`
 
 	// InsertedDate entry insertion date in the database
-	InsertedDate float32 `json:"insertedDate"`
+	InsertedDate string `json:"insertedDate"`
 
 	// Markable whether the entry is still markable (old entry statuses are discarded)
 	Markable bool `json:"markable"`
@@ -376,15 +326,6 @@ type FeedModificationRequest struct {
 // IDRequest defines model for IDRequest.
 type IDRequest struct {
 	Id int64 `json:"id"`
-}
-
-// LoginRequest defines model for LoginRequest.
-type LoginRequest struct {
-	// Name username
-	Name string `json:"name"`
-
-	// Password password
-	Password string `json:"password"`
 }
 
 // MarkRequest Mark Request
@@ -507,6 +448,12 @@ type Settings struct {
 
 	// StarIconDisplayMode whether to show the star icon in the header of entries
 	StarIconDisplayMode SettingsStarIconDisplayMode `json:"starIconDisplayMode"`
+
+	// UnreadCountFavicon show unread count in the favicon
+	UnreadCountFavicon bool `json:"unreadCountFavicon"`
+
+	// UnreadCountTitle show unread count in the title
+	UnreadCountTitle bool `json:"unreadCountTitle"`
 }
 
 // SettingsExternalLinkIconDisplayMode whether to show the external link icon in the header of entries
@@ -584,7 +531,7 @@ type Subscription struct {
 	Id int64 `json:"id"`
 
 	// LastRefresh last time the feed was refreshed
-	LastRefresh *float32 `json:"lastRefresh,omitempty"`
+	LastRefresh *string `json:"lastRefresh,omitempty"`
 
 	// Message error message while fetching the feed
 	Message *string `json:"message,omitempty"`
@@ -593,10 +540,10 @@ type Subscription struct {
 	Name string `json:"name"`
 
 	// NewestItemTime date of the newest item
-	NewestItemTime *float32 `json:"newestItemTime,omitempty"`
+	NewestItemTime *string `json:"newestItemTime,omitempty"`
 
 	// NextRefresh next time the feed refresh is planned, null if refresh is already queued
-	NextRefresh *float32 `json:"nextRefresh,omitempty"`
+	NextRefresh *string `json:"nextRefresh,omitempty"`
 
 	// Position position of the subscription's in the list
 	Position *int32 `json:"position,omitempty"`
@@ -674,9 +621,6 @@ type GetCategoryEntriesParams struct {
 	// Keywords search for keywords in either the title or the content of the entries, separated by spaces, 3 characters minimum
 	Keywords *string `form:"keywords,omitempty" json:"keywords,omitempty"`
 
-	// OnlyIds return only entry ids
-	OnlyIds *bool `form:"onlyIds,omitempty" json:"onlyIds,omitempty"`
-
 	// ExcludedSubscriptionIds comma-separated list of excluded subscription ids
 	ExcludedSubscriptionIds *string `form:"excludedSubscriptionIds,omitempty" json:"excludedSubscriptionIds,omitempty"`
 
@@ -713,9 +657,6 @@ type GetCategoryEntriesAsFeedParams struct {
 	// Keywords search for keywords in either the title or the content of the entries, separated by spaces, 3 characters minimum
 	Keywords *string `form:"keywords,omitempty" json:"keywords,omitempty"`
 
-	// OnlyIds return only entry ids
-	OnlyIds *bool `form:"onlyIds,omitempty" json:"onlyIds,omitempty"`
-
 	// ExcludedSubscriptionIds comma-separated list of excluded subscription ids
 	ExcludedSubscriptionIds *string `form:"excludedSubscriptionIds,omitempty" json:"excludedSubscriptionIds,omitempty"`
 
@@ -751,9 +692,6 @@ type GetFeedEntriesParams struct {
 
 	// Keywords search for keywords in either the title or the content of the entries, separated by spaces, 3 characters minimum
 	Keywords *string `form:"keywords,omitempty" json:"keywords,omitempty"`
-
-	// OnlyIds return only entry ids
-	OnlyIds *bool `form:"onlyIds,omitempty" json:"onlyIds,omitempty"`
 }
 
 // GetFeedEntriesParamsReadType defines parameters for GetFeedEntries.
@@ -784,9 +722,6 @@ type GetFeedEntriesAsFeedParams struct {
 
 	// Keywords search for keywords in either the title or the content of the entries, separated by spaces, 3 characters minimum
 	Keywords *string `form:"keywords,omitempty" json:"keywords,omitempty"`
-
-	// OnlyIds return only entry ids
-	OnlyIds *bool `form:"onlyIds,omitempty" json:"onlyIds,omitempty"`
 }
 
 // GetFeedEntriesAsFeedParamsReadType defines parameters for GetFeedEntriesAsFeed.
@@ -796,10 +731,7 @@ type GetFeedEntriesAsFeedParamsReadType string
 type GetFeedEntriesAsFeedParamsOrder string
 
 // ImportOpmlMultipartBody defines parameters for ImportOpml.
-type ImportOpmlMultipartBody struct {
-	// File ompl file
-	File map[string]interface{} `json:"file"`
-}
+type ImportOpmlMultipartBody = string
 
 // SubscribeFromUrlParams defines parameters for SubscribeFromUrl.
 type SubscribeFromUrlParams struct {
@@ -856,7 +788,7 @@ type TagEntryJSONRequestBody = TagRequest
 type FetchFeedJSONRequestBody = FeedInfoRequest
 
 // ImportOpmlMultipartRequestBody defines body for ImportOpml for multipart/form-data ContentType.
-type ImportOpmlMultipartRequestBody ImportOpmlMultipartBody
+type ImportOpmlMultipartRequestBody = ImportOpmlMultipartBody
 
 // MarkFeedEntriesJSONRequestBody defines body for MarkFeedEntries for application/json ContentType.
 type MarkFeedEntriesJSONRequestBody = MarkRequest
@@ -872,9 +804,6 @@ type SubscribeJSONRequestBody = SubscribeRequest
 
 // UnsubscribeJSONRequestBody defines body for Unsubscribe for application/json ContentType.
 type UnsubscribeJSONRequestBody = IDRequest
-
-// LoginJSONRequestBody defines body for Login for application/json ContentType.
-type LoginJSONRequestBody = LoginRequest
 
 // SendPasswordResetJSONRequestBody defines body for SendPasswordReset for application/json ContentType.
 type SendPasswordResetJSONRequestBody = PasswordResetRequest
@@ -963,9 +892,6 @@ func WithRequestEditorFn(fn RequestEditorFn) ClientOption {
 type ClientInterface interface {
 	// GetMetrics request
 	GetMetrics(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	// GetApplicationSettings request
-	GetApplicationSettings(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// AdminDeleteUserWithBody request with any body
 	AdminDeleteUserWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -1103,11 +1029,6 @@ type ClientInterface interface {
 	// GetProxiedImage request
 	GetProxiedImage(ctx context.Context, params *GetProxiedImageParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	// LoginWithBody request with any body
-	LoginWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
-
-	Login(ctx context.Context, body LoginJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
-
 	// SendPasswordResetWithBody request with any body
 	SendPasswordResetWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
@@ -1143,18 +1064,6 @@ type ClientInterface interface {
 
 func (c *Client) GetMetrics(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewGetMetricsRequest(c.Server)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) GetApplicationSettings(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewGetApplicationSettingsRequest(c.Server)
 	if err != nil {
 		return nil, err
 	}
@@ -1777,30 +1686,6 @@ func (c *Client) GetProxiedImage(ctx context.Context, params *GetProxiedImagePar
 	return c.Client.Do(req)
 }
 
-func (c *Client) LoginWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewLoginRequestWithBody(c.Server, contentType, body)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) Login(ctx context.Context, body LoginJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewLoginRequest(c.Server, body)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
 func (c *Client) SendPasswordResetWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewSendPasswordResetRequestWithBody(c.Server, contentType, body)
 	if err != nil {
@@ -1954,34 +1839,7 @@ func NewGetMetricsRequest(server string) (*http.Request, error) {
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/admin/metrics")
-	if operationPath[0] == '/' {
-		operationPath = "." + operationPath
-	}
-
-	queryURL, err := serverURL.Parse(operationPath)
-	if err != nil {
-		return nil, err
-	}
-
-	req, err := http.NewRequest("GET", queryURL.String(), nil)
-	if err != nil {
-		return nil, err
-	}
-
-	return req, nil
-}
-
-// NewGetApplicationSettingsRequest generates requests for GetApplicationSettings
-func NewGetApplicationSettingsRequest(server string) (*http.Request, error) {
-	var err error
-
-	serverURL, err := url.Parse(server)
-	if err != nil {
-		return nil, err
-	}
-
-	operationPath := fmt.Sprintf("/admin/settings")
+	operationPath := fmt.Sprintf("/rest/admin/metrics")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -2019,7 +1877,7 @@ func NewAdminDeleteUserRequestWithBody(server string, contentType string, body i
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/admin/user/delete")
+	operationPath := fmt.Sprintf("/rest/admin/user/delete")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -2055,7 +1913,7 @@ func NewAdminGetUserRequest(server string, id int64) (*http.Request, error) {
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/admin/user/get/%s", pathParam0)
+	operationPath := fmt.Sprintf("/rest/admin/user/get/%s", pathParam0)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -2082,7 +1940,7 @@ func NewAdminGetUsersRequest(server string) (*http.Request, error) {
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/admin/user/getAll")
+	operationPath := fmt.Sprintf("/rest/admin/user/getAll")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -2120,7 +1978,7 @@ func NewAdminSaveUserRequestWithBody(server string, contentType string, body io.
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/admin/user/save")
+	operationPath := fmt.Sprintf("/rest/admin/user/save")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -2160,7 +2018,7 @@ func NewAddCategoryRequestWithBody(server string, contentType string, body io.Re
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/category/add")
+	operationPath := fmt.Sprintf("/rest/category/add")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -2200,7 +2058,7 @@ func NewCollapseCategoryRequestWithBody(server string, contentType string, body 
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/category/collapse")
+	operationPath := fmt.Sprintf("/rest/category/collapse")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -2240,7 +2098,7 @@ func NewDeleteCategoryRequestWithBody(server string, contentType string, body io
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/category/delete")
+	operationPath := fmt.Sprintf("/rest/category/delete")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -2269,7 +2127,7 @@ func NewGetCategoryEntriesRequest(server string, params *GetCategoryEntriesParam
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/category/entries")
+	operationPath := fmt.Sprintf("/rest/category/entries")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -2373,22 +2231,6 @@ func NewGetCategoryEntriesRequest(server string, params *GetCategoryEntriesParam
 		if params.Keywords != nil {
 
 			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "keywords", runtime.ParamLocationQuery, *params.Keywords); err != nil {
-				return nil, err
-			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
-				return nil, err
-			} else {
-				for k, v := range parsed {
-					for _, v2 := range v {
-						queryValues.Add(k, v2)
-					}
-				}
-			}
-
-		}
-
-		if params.OnlyIds != nil {
-
-			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "onlyIds", runtime.ParamLocationQuery, *params.OnlyIds); err != nil {
 				return nil, err
 			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
 				return nil, err
@@ -2454,7 +2296,7 @@ func NewGetCategoryEntriesAsFeedRequest(server string, params *GetCategoryEntrie
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/category/entriesAsFeed")
+	operationPath := fmt.Sprintf("/rest/category/entriesAsFeed")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -2558,22 +2400,6 @@ func NewGetCategoryEntriesAsFeedRequest(server string, params *GetCategoryEntrie
 		if params.Keywords != nil {
 
 			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "keywords", runtime.ParamLocationQuery, *params.Keywords); err != nil {
-				return nil, err
-			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
-				return nil, err
-			} else {
-				for k, v := range parsed {
-					for _, v2 := range v {
-						queryValues.Add(k, v2)
-					}
-				}
-			}
-
-		}
-
-		if params.OnlyIds != nil {
-
-			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "onlyIds", runtime.ParamLocationQuery, *params.OnlyIds); err != nil {
 				return nil, err
 			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
 				return nil, err
@@ -2639,7 +2465,7 @@ func NewGetRootCategoryRequest(server string) (*http.Request, error) {
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/category/get")
+	operationPath := fmt.Sprintf("/rest/category/get")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -2677,7 +2503,7 @@ func NewMarkCategoryEntriesRequestWithBody(server string, contentType string, bo
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/category/mark")
+	operationPath := fmt.Sprintf("/rest/category/mark")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -2717,7 +2543,7 @@ func NewModifyCategoryRequestWithBody(server string, contentType string, body io
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/category/modify")
+	operationPath := fmt.Sprintf("/rest/category/modify")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -2746,7 +2572,7 @@ func NewGetUnreadCountRequest(server string) (*http.Request, error) {
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/category/unreadCount")
+	operationPath := fmt.Sprintf("/rest/category/unreadCount")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -2784,7 +2610,7 @@ func NewMarkEntryRequestWithBody(server string, contentType string, body io.Read
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/entry/mark")
+	operationPath := fmt.Sprintf("/rest/entry/mark")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -2824,7 +2650,7 @@ func NewMarkEntriesRequestWithBody(server string, contentType string, body io.Re
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/entry/markMultiple")
+	operationPath := fmt.Sprintf("/rest/entry/markMultiple")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -2864,7 +2690,7 @@ func NewStarEntryRequestWithBody(server string, contentType string, body io.Read
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/entry/star")
+	operationPath := fmt.Sprintf("/rest/entry/star")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -2904,7 +2730,7 @@ func NewTagEntryRequestWithBody(server string, contentType string, body io.Reade
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/entry/tag")
+	operationPath := fmt.Sprintf("/rest/entry/tag")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -2933,7 +2759,7 @@ func NewGetTagsRequest(server string) (*http.Request, error) {
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/entry/tags")
+	operationPath := fmt.Sprintf("/rest/entry/tags")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -2960,7 +2786,7 @@ func NewGetFeedEntriesRequest(server string, params *GetFeedEntriesParams) (*htt
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/feed/entries")
+	operationPath := fmt.Sprintf("/rest/feed/entries")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -3064,22 +2890,6 @@ func NewGetFeedEntriesRequest(server string, params *GetFeedEntriesParams) (*htt
 		if params.Keywords != nil {
 
 			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "keywords", runtime.ParamLocationQuery, *params.Keywords); err != nil {
-				return nil, err
-			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
-				return nil, err
-			} else {
-				for k, v := range parsed {
-					for _, v2 := range v {
-						queryValues.Add(k, v2)
-					}
-				}
-			}
-
-		}
-
-		if params.OnlyIds != nil {
-
-			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "onlyIds", runtime.ParamLocationQuery, *params.OnlyIds); err != nil {
 				return nil, err
 			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
 				return nil, err
@@ -3113,7 +2923,7 @@ func NewGetFeedEntriesAsFeedRequest(server string, params *GetFeedEntriesAsFeedP
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/feed/entriesAsFeed")
+	operationPath := fmt.Sprintf("/rest/feed/entriesAsFeed")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -3230,22 +3040,6 @@ func NewGetFeedEntriesAsFeedRequest(server string, params *GetFeedEntriesAsFeedP
 
 		}
 
-		if params.OnlyIds != nil {
-
-			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "onlyIds", runtime.ParamLocationQuery, *params.OnlyIds); err != nil {
-				return nil, err
-			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
-				return nil, err
-			} else {
-				for k, v := range parsed {
-					for _, v2 := range v {
-						queryValues.Add(k, v2)
-					}
-				}
-			}
-
-		}
-
 		queryURL.RawQuery = queryValues.Encode()
 	}
 
@@ -3266,7 +3060,7 @@ func NewExportOpmlRequest(server string) (*http.Request, error) {
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/feed/export")
+	operationPath := fmt.Sprintf("/rest/feed/export")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -3300,7 +3094,7 @@ func NewGetFeedFaviconRequest(server string, id int64) (*http.Request, error) {
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/feed/favicon/%s", pathParam0)
+	operationPath := fmt.Sprintf("/rest/feed/favicon/%s", pathParam0)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -3338,7 +3132,7 @@ func NewFetchFeedRequestWithBody(server string, contentType string, body io.Read
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/feed/fetch")
+	operationPath := fmt.Sprintf("/rest/feed/fetch")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -3374,7 +3168,7 @@ func NewGetFeedRequest(server string, id int64) (*http.Request, error) {
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/feed/get/%s", pathParam0)
+	operationPath := fmt.Sprintf("/rest/feed/get/%s", pathParam0)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -3401,7 +3195,7 @@ func NewImportOpmlRequestWithBody(server string, contentType string, body io.Rea
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/feed/import")
+	operationPath := fmt.Sprintf("/rest/feed/import")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -3441,7 +3235,7 @@ func NewMarkFeedEntriesRequestWithBody(server string, contentType string, body i
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/feed/mark")
+	operationPath := fmt.Sprintf("/rest/feed/mark")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -3481,7 +3275,7 @@ func NewModifyFeedRequestWithBody(server string, contentType string, body io.Rea
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/feed/modify")
+	operationPath := fmt.Sprintf("/rest/feed/modify")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -3521,7 +3315,7 @@ func NewQueueForRefreshRequestWithBody(server string, contentType string, body i
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/feed/refresh")
+	operationPath := fmt.Sprintf("/rest/feed/refresh")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -3550,7 +3344,7 @@ func NewQueueAllForRefreshRequest(server string) (*http.Request, error) {
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/feed/refreshAll")
+	operationPath := fmt.Sprintf("/rest/feed/refreshAll")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -3577,7 +3371,7 @@ func NewSubscribeFromUrlRequest(server string, params *SubscribeFromUrlParams) (
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/feed/subscribe")
+	operationPath := fmt.Sprintf("/rest/feed/subscribe")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -3633,7 +3427,7 @@ func NewSubscribeRequestWithBody(server string, contentType string, body io.Read
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/feed/subscribe")
+	operationPath := fmt.Sprintf("/rest/feed/subscribe")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -3673,7 +3467,7 @@ func NewUnsubscribeRequestWithBody(server string, contentType string, body io.Re
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/feed/unsubscribe")
+	operationPath := fmt.Sprintf("/rest/feed/unsubscribe")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -3702,7 +3496,7 @@ func NewGetServerInfosRequest(server string) (*http.Request, error) {
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/server/get")
+	operationPath := fmt.Sprintf("/rest/server/get")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -3729,7 +3523,7 @@ func NewGetProxiedImageRequest(server string, params *GetProxiedImageParams) (*h
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/server/proxy")
+	operationPath := fmt.Sprintf("/rest/server/proxy")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -3765,46 +3559,6 @@ func NewGetProxiedImageRequest(server string, params *GetProxiedImageParams) (*h
 	return req, nil
 }
 
-// NewLoginRequest calls the generic Login builder with application/json body
-func NewLoginRequest(server string, body LoginJSONRequestBody) (*http.Request, error) {
-	var bodyReader io.Reader
-	buf, err := json.Marshal(body)
-	if err != nil {
-		return nil, err
-	}
-	bodyReader = bytes.NewReader(buf)
-	return NewLoginRequestWithBody(server, "application/json", bodyReader)
-}
-
-// NewLoginRequestWithBody generates requests for Login with any type of body
-func NewLoginRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
-	var err error
-
-	serverURL, err := url.Parse(server)
-	if err != nil {
-		return nil, err
-	}
-
-	operationPath := fmt.Sprintf("/user/login")
-	if operationPath[0] == '/' {
-		operationPath = "." + operationPath
-	}
-
-	queryURL, err := serverURL.Parse(operationPath)
-	if err != nil {
-		return nil, err
-	}
-
-	req, err := http.NewRequest("POST", queryURL.String(), body)
-	if err != nil {
-		return nil, err
-	}
-
-	req.Header.Add("Content-Type", contentType)
-
-	return req, nil
-}
-
 // NewSendPasswordResetRequest calls the generic SendPasswordReset builder with application/json body
 func NewSendPasswordResetRequest(server string, body SendPasswordResetJSONRequestBody) (*http.Request, error) {
 	var bodyReader io.Reader
@@ -3825,7 +3579,7 @@ func NewSendPasswordResetRequestWithBody(server string, contentType string, body
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/user/passwordReset")
+	operationPath := fmt.Sprintf("/rest/user/passwordReset")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -3854,7 +3608,7 @@ func NewPasswordRecoveryCallbackRequest(server string, params *PasswordRecoveryC
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/user/passwordResetCallback")
+	operationPath := fmt.Sprintf("/rest/user/passwordResetCallback")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -3911,7 +3665,7 @@ func NewGetUserProfileRequest(server string) (*http.Request, error) {
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/user/profile")
+	operationPath := fmt.Sprintf("/rest/user/profile")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -3949,7 +3703,7 @@ func NewSaveUserProfileRequestWithBody(server string, contentType string, body i
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/user/profile")
+	operationPath := fmt.Sprintf("/rest/user/profile")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -3978,7 +3732,7 @@ func NewDeleteUserRequest(server string) (*http.Request, error) {
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/user/profile/deleteAccount")
+	operationPath := fmt.Sprintf("/rest/user/profile/deleteAccount")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -4016,7 +3770,7 @@ func NewRegisterUserRequestWithBody(server string, contentType string, body io.R
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/user/register")
+	operationPath := fmt.Sprintf("/rest/user/register")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -4045,7 +3799,7 @@ func NewGetUserSettingsRequest(server string) (*http.Request, error) {
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/user/settings")
+	operationPath := fmt.Sprintf("/rest/user/settings")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -4083,7 +3837,7 @@ func NewSaveUserSettingsRequestWithBody(server string, contentType string, body 
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/user/settings")
+	operationPath := fmt.Sprintf("/rest/user/settings")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -4148,9 +3902,6 @@ func WithBaseURL(baseURL string) ClientOption {
 type ClientWithResponsesInterface interface {
 	// GetMetricsWithResponse request
 	GetMetricsWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetMetricsResponse, error)
-
-	// GetApplicationSettingsWithResponse request
-	GetApplicationSettingsWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetApplicationSettingsResponse, error)
 
 	// AdminDeleteUserWithBodyWithResponse request with any body
 	AdminDeleteUserWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*AdminDeleteUserResponse, error)
@@ -4288,11 +4039,6 @@ type ClientWithResponsesInterface interface {
 	// GetProxiedImageWithResponse request
 	GetProxiedImageWithResponse(ctx context.Context, params *GetProxiedImageParams, reqEditors ...RequestEditorFn) (*GetProxiedImageResponse, error)
 
-	// LoginWithBodyWithResponse request with any body
-	LoginWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*LoginResponse, error)
-
-	LoginWithResponse(ctx context.Context, body LoginJSONRequestBody, reqEditors ...RequestEditorFn) (*LoginResponse, error)
-
 	// SendPasswordResetWithBodyWithResponse request with any body
 	SendPasswordResetWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*SendPasswordResetResponse, error)
 
@@ -4341,28 +4087,6 @@ func (r GetMetricsResponse) Status() string {
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r GetMetricsResponse) StatusCode() int {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.StatusCode
-	}
-	return 0
-}
-
-type GetApplicationSettingsResponse struct {
-	Body         []byte
-	HTTPResponse *http.Response
-	JSONDefault  *ApplicationSettings
-}
-
-// Status returns HTTPResponse.Status
-func (r GetApplicationSettingsResponse) Status() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Status
-	}
-	return http.StatusText(0)
-}
-
-// StatusCode returns HTTPResponse.StatusCode
-func (r GetApplicationSettingsResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -5094,27 +4818,6 @@ func (r GetProxiedImageResponse) StatusCode() int {
 	return 0
 }
 
-type LoginResponse struct {
-	Body         []byte
-	HTTPResponse *http.Response
-}
-
-// Status returns HTTPResponse.Status
-func (r LoginResponse) Status() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Status
-	}
-	return http.StatusText(0)
-}
-
-// StatusCode returns HTTPResponse.StatusCode
-func (r LoginResponse) StatusCode() int {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.StatusCode
-	}
-	return 0
-}
-
 type SendPasswordResetResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
@@ -5292,15 +4995,6 @@ func (c *ClientWithResponses) GetMetricsWithResponse(ctx context.Context, reqEdi
 		return nil, err
 	}
 	return ParseGetMetricsResponse(rsp)
-}
-
-// GetApplicationSettingsWithResponse request returning *GetApplicationSettingsResponse
-func (c *ClientWithResponses) GetApplicationSettingsWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetApplicationSettingsResponse, error) {
-	rsp, err := c.GetApplicationSettings(ctx, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseGetApplicationSettingsResponse(rsp)
 }
 
 // AdminDeleteUserWithBodyWithResponse request with arbitrary body returning *AdminDeleteUserResponse
@@ -5745,23 +5439,6 @@ func (c *ClientWithResponses) GetProxiedImageWithResponse(ctx context.Context, p
 	return ParseGetProxiedImageResponse(rsp)
 }
 
-// LoginWithBodyWithResponse request with arbitrary body returning *LoginResponse
-func (c *ClientWithResponses) LoginWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*LoginResponse, error) {
-	rsp, err := c.LoginWithBody(ctx, contentType, body, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseLoginResponse(rsp)
-}
-
-func (c *ClientWithResponses) LoginWithResponse(ctx context.Context, body LoginJSONRequestBody, reqEditors ...RequestEditorFn) (*LoginResponse, error) {
-	rsp, err := c.Login(ctx, body, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseLoginResponse(rsp)
-}
-
 // SendPasswordResetWithBodyWithResponse request with arbitrary body returning *SendPasswordResetResponse
 func (c *ClientWithResponses) SendPasswordResetWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*SendPasswordResetResponse, error) {
 	rsp, err := c.SendPasswordResetWithBody(ctx, contentType, body, reqEditors...)
@@ -5877,32 +5554,6 @@ func ParseGetMetricsResponse(rsp *http.Response) (*GetMetricsResponse, error) {
 	response := &GetMetricsResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
-	}
-
-	return response, nil
-}
-
-// ParseGetApplicationSettingsResponse parses an HTTP response from a GetApplicationSettingsWithResponse call
-func ParseGetApplicationSettingsResponse(rsp *http.Response) (*GetApplicationSettingsResponse, error) {
-	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() { _ = rsp.Body.Close() }()
-	if err != nil {
-		return nil, err
-	}
-
-	response := &GetApplicationSettingsResponse{
-		Body:         bodyBytes,
-		HTTPResponse: rsp,
-	}
-
-	switch {
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && true:
-		var dest ApplicationSettings
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSONDefault = &dest
-
 	}
 
 	return response, nil
@@ -6562,22 +6213,6 @@ func ParseGetProxiedImageResponse(rsp *http.Response) (*GetProxiedImageResponse,
 	return response, nil
 }
 
-// ParseLoginResponse parses an HTTP response from a LoginWithResponse call
-func ParseLoginResponse(rsp *http.Response) (*LoginResponse, error) {
-	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() { _ = rsp.Body.Close() }()
-	if err != nil {
-		return nil, err
-	}
-
-	response := &LoginResponse{
-		Body:         bodyBytes,
-		HTTPResponse: rsp,
-	}
-
-	return response, nil
-}
-
 // ParseSendPasswordResetResponse parses an HTTP response from a SendPasswordResetWithResponse call
 func ParseSendPasswordResetResponse(rsp *http.Response) (*SendPasswordResetResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
@@ -6729,139 +6364,133 @@ func ParseSaveUserSettingsResponse(rsp *http.Response) (*SaveUserSettingsRespons
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
 	// Retrieve server metrics
-	// (GET /admin/metrics)
+	// (GET /rest/admin/metrics)
 	GetMetrics(ctx echo.Context) error
-	// Retrieve application settings
-	// (GET /admin/settings)
-	GetApplicationSettings(ctx echo.Context) error
 	// Delete a user
-	// (POST /admin/user/delete)
+	// (POST /rest/admin/user/delete)
 	AdminDeleteUser(ctx echo.Context) error
 	// Get user information
-	// (GET /admin/user/get/{id})
+	// (GET /rest/admin/user/get/{id})
 	AdminGetUser(ctx echo.Context, id int64) error
 	// Get all users
-	// (GET /admin/user/getAll)
+	// (GET /rest/admin/user/getAll)
 	AdminGetUsers(ctx echo.Context) error
 	// Save or update a user
-	// (POST /admin/user/save)
+	// (POST /rest/admin/user/save)
 	AdminSaveUser(ctx echo.Context) error
 	// Add a category
-	// (POST /category/add)
+	// (POST /rest/category/add)
 	AddCategory(ctx echo.Context) error
 	// Collapse a category
-	// (POST /category/collapse)
+	// (POST /rest/category/collapse)
 	CollapseCategory(ctx echo.Context) error
 	// Delete a category
-	// (POST /category/delete)
+	// (POST /rest/category/delete)
 	DeleteCategory(ctx echo.Context) error
 	// Get category entries
-	// (GET /category/entries)
+	// (GET /rest/category/entries)
 	GetCategoryEntries(ctx echo.Context, params GetCategoryEntriesParams) error
 	// Get category entries as feed
-	// (GET /category/entriesAsFeed)
+	// (GET /rest/category/entriesAsFeed)
 	GetCategoryEntriesAsFeed(ctx echo.Context, params GetCategoryEntriesAsFeedParams) error
 	// Get root category
-	// (GET /category/get)
+	// (GET /rest/category/get)
 	GetRootCategory(ctx echo.Context) error
 	// Mark category entries
-	// (POST /category/mark)
+	// (POST /rest/category/mark)
 	MarkCategoryEntries(ctx echo.Context) error
 	// Rename a category
-	// (POST /category/modify)
+	// (POST /rest/category/modify)
 	ModifyCategory(ctx echo.Context) error
 	// Get unread count for feed subscriptions
-	// (GET /category/unreadCount)
+	// (GET /rest/category/unreadCount)
 	GetUnreadCount(ctx echo.Context) error
 	// Mark a feed entry
-	// (POST /entry/mark)
+	// (POST /rest/entry/mark)
 	MarkEntry(ctx echo.Context) error
 	// Mark multiple feed entries
-	// (POST /entry/markMultiple)
+	// (POST /rest/entry/markMultiple)
 	MarkEntries(ctx echo.Context) error
 	// Star a feed entry
-	// (POST /entry/star)
+	// (POST /rest/entry/star)
 	StarEntry(ctx echo.Context) error
 	// Set feed entry tags
-	// (POST /entry/tag)
+	// (POST /rest/entry/tag)
 	TagEntry(ctx echo.Context) error
 	// Get list of tags for the user
-	// (GET /entry/tags)
+	// (GET /rest/entry/tags)
 	GetTags(ctx echo.Context) error
 	// Get feed entries
-	// (GET /feed/entries)
+	// (GET /rest/feed/entries)
 	GetFeedEntries(ctx echo.Context, params GetFeedEntriesParams) error
 	// Get feed entries as a feed
-	// (GET /feed/entriesAsFeed)
+	// (GET /rest/feed/entriesAsFeed)
 	GetFeedEntriesAsFeed(ctx echo.Context, params GetFeedEntriesAsFeedParams) error
 	// OPML export
-	// (GET /feed/export)
+	// (GET /rest/feed/export)
 	ExportOpml(ctx echo.Context) error
 	// Fetch a feed's icon
-	// (GET /feed/favicon/{id})
+	// (GET /rest/feed/favicon/{id})
 	GetFeedFavicon(ctx echo.Context, id int64) error
 	// Fetch a feed
-	// (POST /feed/fetch)
+	// (POST /rest/feed/fetch)
 	FetchFeed(ctx echo.Context) error
 	// get feed
-	// (GET /feed/get/{id})
+	// (GET /rest/feed/get/{id})
 	GetFeed(ctx echo.Context, id int64) error
 	// OPML import
-	// (POST /feed/import)
+	// (POST /rest/feed/import)
 	ImportOpml(ctx echo.Context) error
 	// Mark feed entries
-	// (POST /feed/mark)
+	// (POST /rest/feed/mark)
 	MarkFeedEntries(ctx echo.Context) error
 	// Modify a subscription
-	// (POST /feed/modify)
+	// (POST /rest/feed/modify)
 	ModifyFeed(ctx echo.Context) error
 	// Queue a feed for refresh
-	// (POST /feed/refresh)
+	// (POST /rest/feed/refresh)
 	QueueForRefresh(ctx echo.Context) error
 	// Queue all feeds of the user for refresh
-	// (GET /feed/refreshAll)
+	// (GET /rest/feed/refreshAll)
 	QueueAllForRefresh(ctx echo.Context) error
 	// Subscribe to a feed
-	// (GET /feed/subscribe)
+	// (GET /rest/feed/subscribe)
 	SubscribeFromUrl(ctx echo.Context, params SubscribeFromUrlParams) error
 	// Subscribe to a feed
-	// (POST /feed/subscribe)
+	// (POST /rest/feed/subscribe)
 	Subscribe(ctx echo.Context) error
 	// Unsubscribe from a feed
-	// (POST /feed/unsubscribe)
+	// (POST /rest/feed/unsubscribe)
 	Unsubscribe(ctx echo.Context) error
 	// Get server infos
-	// (GET /server/get)
+	// (GET /rest/server/get)
 	GetServerInfos(ctx echo.Context) error
 	// proxy image
-	// (GET /server/proxy)
+	// (GET /rest/server/proxy)
 	GetProxiedImage(ctx echo.Context, params GetProxiedImageParams) error
-	// Login and create a session
-	// (POST /user/login)
-	Login(ctx echo.Context) error
 	// send a password reset email
-	// (POST /user/passwordReset)
+	// (POST /rest/user/passwordReset)
 	SendPasswordReset(ctx echo.Context) error
 
-	// (GET /user/passwordResetCallback)
+	// (GET /rest/user/passwordResetCallback)
 	PasswordRecoveryCallback(ctx echo.Context, params PasswordRecoveryCallbackParams) error
 	// Retrieve user's profile
-	// (GET /user/profile)
+	// (GET /rest/user/profile)
 	GetUserProfile(ctx echo.Context) error
 	// Save user's profile
-	// (POST /user/profile)
+	// (POST /rest/user/profile)
 	SaveUserProfile(ctx echo.Context) error
 	// Delete the user account
-	// (POST /user/profile/deleteAccount)
+	// (POST /rest/user/profile/deleteAccount)
 	DeleteUser(ctx echo.Context) error
 	// Register a new account
-	// (POST /user/register)
+	// (POST /rest/user/register)
 	RegisterUser(ctx echo.Context) error
 	// Retrieve user settings
-	// (GET /user/settings)
+	// (GET /rest/user/settings)
 	GetUserSettings(ctx echo.Context) error
 	// Save user settings
-	// (POST /user/settings)
+	// (POST /rest/user/settings)
 	SaveUserSettings(ctx echo.Context) error
 }
 
@@ -6878,17 +6507,6 @@ func (w *ServerInterfaceWrapper) GetMetrics(ctx echo.Context) error {
 
 	// Invoke the callback with all the unmarshaled arguments
 	err = w.Handler.GetMetrics(ctx)
-	return err
-}
-
-// GetApplicationSettings converts echo context to params.
-func (w *ServerInterfaceWrapper) GetApplicationSettings(ctx echo.Context) error {
-	var err error
-
-	ctx.Set(BasicAuthScopes, []string{})
-
-	// Invoke the callback with all the unmarshaled arguments
-	err = w.Handler.GetApplicationSettings(ctx)
 	return err
 }
 
@@ -7033,13 +6651,6 @@ func (w *ServerInterfaceWrapper) GetCategoryEntries(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter keywords: %s", err))
 	}
 
-	// ------------- Optional query parameter "onlyIds" -------------
-
-	err = runtime.BindQueryParameter("form", true, false, "onlyIds", ctx.QueryParams(), &params.OnlyIds)
-	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter onlyIds: %s", err))
-	}
-
 	// ------------- Optional query parameter "excludedSubscriptionIds" -------------
 
 	err = runtime.BindQueryParameter("form", true, false, "excludedSubscriptionIds", ctx.QueryParams(), &params.ExcludedSubscriptionIds)
@@ -7114,13 +6725,6 @@ func (w *ServerInterfaceWrapper) GetCategoryEntriesAsFeed(ctx echo.Context) erro
 	err = runtime.BindQueryParameter("form", true, false, "keywords", ctx.QueryParams(), &params.Keywords)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter keywords: %s", err))
-	}
-
-	// ------------- Optional query parameter "onlyIds" -------------
-
-	err = runtime.BindQueryParameter("form", true, false, "onlyIds", ctx.QueryParams(), &params.OnlyIds)
-	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter onlyIds: %s", err))
 	}
 
 	// ------------- Optional query parameter "excludedSubscriptionIds" -------------
@@ -7298,13 +6902,6 @@ func (w *ServerInterfaceWrapper) GetFeedEntries(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter keywords: %s", err))
 	}
 
-	// ------------- Optional query parameter "onlyIds" -------------
-
-	err = runtime.BindQueryParameter("form", true, false, "onlyIds", ctx.QueryParams(), &params.OnlyIds)
-	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter onlyIds: %s", err))
-	}
-
 	// Invoke the callback with all the unmarshaled arguments
 	err = w.Handler.GetFeedEntries(ctx, params)
 	return err
@@ -7365,13 +6962,6 @@ func (w *ServerInterfaceWrapper) GetFeedEntriesAsFeed(ctx echo.Context) error {
 	err = runtime.BindQueryParameter("form", true, false, "keywords", ctx.QueryParams(), &params.Keywords)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter keywords: %s", err))
-	}
-
-	// ------------- Optional query parameter "onlyIds" -------------
-
-	err = runtime.BindQueryParameter("form", true, false, "onlyIds", ctx.QueryParams(), &params.OnlyIds)
-	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter onlyIds: %s", err))
 	}
 
 	// Invoke the callback with all the unmarshaled arguments
@@ -7565,17 +7155,6 @@ func (w *ServerInterfaceWrapper) GetProxiedImage(ctx echo.Context) error {
 	return err
 }
 
-// Login converts echo context to params.
-func (w *ServerInterfaceWrapper) Login(ctx echo.Context) error {
-	var err error
-
-	ctx.Set(BasicAuthScopes, []string{})
-
-	// Invoke the callback with all the unmarshaled arguments
-	err = w.Handler.Login(ctx)
-	return err
-}
-
 // SendPasswordReset converts echo context to params.
 func (w *ServerInterfaceWrapper) SendPasswordReset(ctx echo.Context) error {
 	var err error
@@ -7708,151 +7287,141 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 		Handler: si,
 	}
 
-	router.GET(baseURL+"/admin/metrics", wrapper.GetMetrics)
-	router.GET(baseURL+"/admin/settings", wrapper.GetApplicationSettings)
-	router.POST(baseURL+"/admin/user/delete", wrapper.AdminDeleteUser)
-	router.GET(baseURL+"/admin/user/get/:id", wrapper.AdminGetUser)
-	router.GET(baseURL+"/admin/user/getAll", wrapper.AdminGetUsers)
-	router.POST(baseURL+"/admin/user/save", wrapper.AdminSaveUser)
-	router.POST(baseURL+"/category/add", wrapper.AddCategory)
-	router.POST(baseURL+"/category/collapse", wrapper.CollapseCategory)
-	router.POST(baseURL+"/category/delete", wrapper.DeleteCategory)
-	router.GET(baseURL+"/category/entries", wrapper.GetCategoryEntries)
-	router.GET(baseURL+"/category/entriesAsFeed", wrapper.GetCategoryEntriesAsFeed)
-	router.GET(baseURL+"/category/get", wrapper.GetRootCategory)
-	router.POST(baseURL+"/category/mark", wrapper.MarkCategoryEntries)
-	router.POST(baseURL+"/category/modify", wrapper.ModifyCategory)
-	router.GET(baseURL+"/category/unreadCount", wrapper.GetUnreadCount)
-	router.POST(baseURL+"/entry/mark", wrapper.MarkEntry)
-	router.POST(baseURL+"/entry/markMultiple", wrapper.MarkEntries)
-	router.POST(baseURL+"/entry/star", wrapper.StarEntry)
-	router.POST(baseURL+"/entry/tag", wrapper.TagEntry)
-	router.GET(baseURL+"/entry/tags", wrapper.GetTags)
-	router.GET(baseURL+"/feed/entries", wrapper.GetFeedEntries)
-	router.GET(baseURL+"/feed/entriesAsFeed", wrapper.GetFeedEntriesAsFeed)
-	router.GET(baseURL+"/feed/export", wrapper.ExportOpml)
-	router.GET(baseURL+"/feed/favicon/:id", wrapper.GetFeedFavicon)
-	router.POST(baseURL+"/feed/fetch", wrapper.FetchFeed)
-	router.GET(baseURL+"/feed/get/:id", wrapper.GetFeed)
-	router.POST(baseURL+"/feed/import", wrapper.ImportOpml)
-	router.POST(baseURL+"/feed/mark", wrapper.MarkFeedEntries)
-	router.POST(baseURL+"/feed/modify", wrapper.ModifyFeed)
-	router.POST(baseURL+"/feed/refresh", wrapper.QueueForRefresh)
-	router.GET(baseURL+"/feed/refreshAll", wrapper.QueueAllForRefresh)
-	router.GET(baseURL+"/feed/subscribe", wrapper.SubscribeFromUrl)
-	router.POST(baseURL+"/feed/subscribe", wrapper.Subscribe)
-	router.POST(baseURL+"/feed/unsubscribe", wrapper.Unsubscribe)
-	router.GET(baseURL+"/server/get", wrapper.GetServerInfos)
-	router.GET(baseURL+"/server/proxy", wrapper.GetProxiedImage)
-	router.POST(baseURL+"/user/login", wrapper.Login)
-	router.POST(baseURL+"/user/passwordReset", wrapper.SendPasswordReset)
-	router.GET(baseURL+"/user/passwordResetCallback", wrapper.PasswordRecoveryCallback)
-	router.GET(baseURL+"/user/profile", wrapper.GetUserProfile)
-	router.POST(baseURL+"/user/profile", wrapper.SaveUserProfile)
-	router.POST(baseURL+"/user/profile/deleteAccount", wrapper.DeleteUser)
-	router.POST(baseURL+"/user/register", wrapper.RegisterUser)
-	router.GET(baseURL+"/user/settings", wrapper.GetUserSettings)
-	router.POST(baseURL+"/user/settings", wrapper.SaveUserSettings)
+	router.GET(baseURL+"/rest/admin/metrics", wrapper.GetMetrics)
+	router.POST(baseURL+"/rest/admin/user/delete", wrapper.AdminDeleteUser)
+	router.GET(baseURL+"/rest/admin/user/get/:id", wrapper.AdminGetUser)
+	router.GET(baseURL+"/rest/admin/user/getAll", wrapper.AdminGetUsers)
+	router.POST(baseURL+"/rest/admin/user/save", wrapper.AdminSaveUser)
+	router.POST(baseURL+"/rest/category/add", wrapper.AddCategory)
+	router.POST(baseURL+"/rest/category/collapse", wrapper.CollapseCategory)
+	router.POST(baseURL+"/rest/category/delete", wrapper.DeleteCategory)
+	router.GET(baseURL+"/rest/category/entries", wrapper.GetCategoryEntries)
+	router.GET(baseURL+"/rest/category/entriesAsFeed", wrapper.GetCategoryEntriesAsFeed)
+	router.GET(baseURL+"/rest/category/get", wrapper.GetRootCategory)
+	router.POST(baseURL+"/rest/category/mark", wrapper.MarkCategoryEntries)
+	router.POST(baseURL+"/rest/category/modify", wrapper.ModifyCategory)
+	router.GET(baseURL+"/rest/category/unreadCount", wrapper.GetUnreadCount)
+	router.POST(baseURL+"/rest/entry/mark", wrapper.MarkEntry)
+	router.POST(baseURL+"/rest/entry/markMultiple", wrapper.MarkEntries)
+	router.POST(baseURL+"/rest/entry/star", wrapper.StarEntry)
+	router.POST(baseURL+"/rest/entry/tag", wrapper.TagEntry)
+	router.GET(baseURL+"/rest/entry/tags", wrapper.GetTags)
+	router.GET(baseURL+"/rest/feed/entries", wrapper.GetFeedEntries)
+	router.GET(baseURL+"/rest/feed/entriesAsFeed", wrapper.GetFeedEntriesAsFeed)
+	router.GET(baseURL+"/rest/feed/export", wrapper.ExportOpml)
+	router.GET(baseURL+"/rest/feed/favicon/:id", wrapper.GetFeedFavicon)
+	router.POST(baseURL+"/rest/feed/fetch", wrapper.FetchFeed)
+	router.GET(baseURL+"/rest/feed/get/:id", wrapper.GetFeed)
+	router.POST(baseURL+"/rest/feed/import", wrapper.ImportOpml)
+	router.POST(baseURL+"/rest/feed/mark", wrapper.MarkFeedEntries)
+	router.POST(baseURL+"/rest/feed/modify", wrapper.ModifyFeed)
+	router.POST(baseURL+"/rest/feed/refresh", wrapper.QueueForRefresh)
+	router.GET(baseURL+"/rest/feed/refreshAll", wrapper.QueueAllForRefresh)
+	router.GET(baseURL+"/rest/feed/subscribe", wrapper.SubscribeFromUrl)
+	router.POST(baseURL+"/rest/feed/subscribe", wrapper.Subscribe)
+	router.POST(baseURL+"/rest/feed/unsubscribe", wrapper.Unsubscribe)
+	router.GET(baseURL+"/rest/server/get", wrapper.GetServerInfos)
+	router.GET(baseURL+"/rest/server/proxy", wrapper.GetProxiedImage)
+	router.POST(baseURL+"/rest/user/passwordReset", wrapper.SendPasswordReset)
+	router.GET(baseURL+"/rest/user/passwordResetCallback", wrapper.PasswordRecoveryCallback)
+	router.GET(baseURL+"/rest/user/profile", wrapper.GetUserProfile)
+	router.POST(baseURL+"/rest/user/profile", wrapper.SaveUserProfile)
+	router.POST(baseURL+"/rest/user/profile/deleteAccount", wrapper.DeleteUser)
+	router.POST(baseURL+"/rest/user/register", wrapper.RegisterUser)
+	router.GET(baseURL+"/rest/user/settings", wrapper.GetUserSettings)
+	router.POST(baseURL+"/rest/user/settings", wrapper.SaveUserSettings)
 
 }
 
 // Base64 encoded, gzipped, json marshaled Swagger object
 var swaggerSpec = []string{
 
-	"H4sIAAAAAAAC/+x9bW/cOJLwXyH6eYDsAb3jTLI7uPM3T15mvZdMco6DPWAwWLCl6m6OKVJDUm73Dfzf",
-	"D3yTKKmoVnvScWYv3+wWRRarWO/F0m+LQla1FCCMXpz/ttDFFirq/rwoyxfUwEaq/RX82oA29tcSdKFY",
-	"bZgUi3M7hsRBJI5aLmola1CGgZtI0ArGr7pfl4uK3r0BsTHbxfm3z/59uTD7GhbnC20UE5vF/XJRUwXC",
-	"XJbjGfwTUsT1WbkkbE2o2B+e9365UPBrwxSUi/OfPDA/t6Pk6hcojF39oqyY+EBv4aMGlUWDHUDsCMLE",
-	"WqqKut+HeKB2rvHLjXtPE/+4hWElJQcqLBBQUcYzL7pnyb5H+ANBVxwQ9NGikI0wRBtqGo0uzMocuOVi",
-	"ufA7XZwvmDDf/aWbgAkDG1B2Apz0bopAf4TeWu+kyq3cPj5E0ojOuP/lBJHrmrPCEe0DGMPExtFrQD3O",
-	"5e4KNkwb5Ya6X8c4o0LIRhRQgTDJiG6DK1rcbJRsRHm9VUBLN0+Ky+fP7PllglVNtTj/FsNrQYutQywI",
-	"O+anxY/v3r1fLBdXr15efkj22K1aKKAGXkIlLzzdcehLauiKanhhf2jq76kpth/Y/wAK4xiu+PrHuqQG",
-	"Hr6/jZQbDheC8r1hhb5WtLhhYvNCloDiNIxvzPY/YY+PULTeMgOvOnYY7z4O+pvUZnKWS2FA3VI+Ey3x",
-	"tfdSmWNfUbBmdygwW6C3+zeSZjazZSW8VrL6B6xeKLrjoDInllV0A++VvNtPIucGoP7gZMVLuj9A1KfY",
-	"lip690oYxUBfbODhc7wGKF/QmhbM7B8+g34PykrsmeSomxVnxUfFUUr82oDaX7MKZGMeAJKCtQK9jYfq",
-	"LRONgYdgR1emtiS/KEsFWqOw2jHZ820fvk8EMD5g/im2w6955tzZh5YEPwYlMV7MKFaYCM97yVmxx6cy",
-	"CuAKuKRlypmjCRthBZIVS3orednbhBVYfzYMV0pW9VxschJ9Bystixswk/zTjnrPxGYCzKEeG+sdTIdE",
-	"nYBJ+gmxnhPZqXTBRQkmN0ZCAmP6MROPmTJluAF7Zdklc14whR9N1rGNYWHdkxIMZVyPLLhiy3ipADHi",
-	"WiM0DolmKXOQMQOVm+H/K1gvzhf/76wzu8+CzX3WQnXfgkyVou5/uKupKDEzbrcFswVFzBYSU1iT+AaR",
-	"ihSSc1prKFErb20xP7El/3zmJj40q24SZCOYSZlY8Bjz4UbkgZeOcRvy7/+ILj2cIWvKSs38K6MZwhMi",
-	"1wPCCfc/Z86POihhB7KiPZ/JgYn0dahfRrerBW2KPd7Kkq2DYZz1fVr3r0pGE5XxBTHy/z5nQsDOEWBJ",
-	"RMO5dYSENKTYUrFxu/8dDqadGj0th+fMUt7OWTJdc7oncVQO9GPJz0qcnIH7syR8S9VN1nuPsgPhwPhk",
-	"ruvYR+JBig8Pd7dcZqNB0YwXfsO0sawGfgDZMbMlWlZAKjDUasDRtiE3F+/PNVcuOsWCSnalpHoRPbL+",
-	"WtYc0U4gaFC3VsgrBiUxkgQd6J5Z/iZUlGRNGZ93cLxQeMPEzXjRj1dvoliyJgszsCRwZxQtDJRkrWTV",
-	"rrokUvA9WTPOobTn12lqJjZkLZWHK6Bp6Y92PAAd8sZeDdVvpUKOG/MwuSXIlmpSSQUEuPO0M/GLjZAK",
-	"yiugpTdK8FlVA0s3t7cPyZrTDdlRTcL7USoHobYklPP2LFFlH5hGCSiJgg1VJQetAwqZIm7KiSALZxXD",
-	"aN8tCCXxg2ZRtgKt6QZBoDtp1hzYUSUskeLI2TrX/hrPhqOuHNgdLcDYnHK91nBwp2HUrK06/jC0qjNs",
-	"ugEB3mgm3dDjJU93WhNm7U4qds5aRdutm5NYR1uhtDFbqRD6urfCUywE1FmkiCyvKvpnDTVV1J83L+V6",
-	"Vux4RikMYILLgxIfI29aXyP3mjf9PdncuPZ90VQrT3kQBZe6UXDtnuATtYNIxSogdpLpSGkYHtz86Skb",
-	"NRl2teyB2RSObXCTMy+SzdYa9BaAJzoKZQtAbhbcbHVL52xV+xDdd29tN0Vm4U2D6XyPNvcMeYcVUqCr",
-	"XlsJQ2/tc7ueVXmNBqdWHEAWEHTCLAgZAIQGZaB8OXEe/Zh4GqMyiH4zdjorqm6sRzztrYXZNdGGcU7i",
-	"S+RPkpfhoVcbQcuUTBdUlVD+G6pHKigZfZmuhm/HjSPJk6lj7AZfb5tqJSjjfwO22ZrpiU0cTLZudDL7",
-	"LOWVrjfBiMPFDrBjf95/sNLa7vNm3tnBx+3Cqvzx9IcMAWV4/sD0JKqz9gwzHLz5YTg6oTZUKSxmEB5M",
-	"AWPoBlET7tfE4kWfjpA/NHkd5Dn0+4dYDC5/GFCJNHIfojIKOiVI6ETuJsKzE4hBsHWyKjjSPcmRsHyg",
-	"vidnR4Nli52wPwszZhK8tmCJtRzv1T7JGgUZnB6HzTl4nAt/1tt020jypNlYAQpiooESL/wvT//ju0OA",
-	"TwE8K9LhAJ8V5Yj28KcNKqwZN4DYfX9/9d9viB9G4JbyxllwUhC7VHRTjHQKxiqeilDtvRLvUu1JKZ17",
-	"VlFTbGcgdvlFhnG+pJDL5cvkFGERsGNdkMw6b+SGiexS+ez7uPji+TOXXGr/PSoznyTlH1B3kcyM7fEt",
-	"VTcPC13BXcGbEso0Jo2HACxrWPahHU9KRZ5Qzp8sSZiGmK3UQHQ6WRcOCTPkleMnXmUGo80JvUfbeNkv",
-	"o3EwOeCC/noyhwWjSvwe1mgEx5LZbaN1isleNmQjTbdDD5BzP40k9FayssVbK8u21AqrPdnSWyArAEHW",
-	"YIptF6mpgHqX31lKAm5BRREAM8XUDeztkUQo6WJeTphGIUq9Y7SlbnsaSHw5wuNtNamI0jpxiw9iVPIS",
-	"1PWWIlLNAeBAiWhxgy1yhPOR5m0TN1Xd5FFLSBUCY4ihOBZTYUqUkxtuWM1hmqPDIDLJ2kHzTsRnA4HC",
-	"sJlR2hSyEQcN9trOjW01JiGvQIPJCuhMYZf7mVCfxHc+bxSQREEhb0ENKtye/fWvhyStXwoFVck14zDL",
-	"BApjZ1pBjbJmzvus2ggDSK+wa0ki2FYAeM1M6rBuCNUf5JsMYv1s2hfNxUCmXd25d7qGgq3Z0NzAkLu0",
-	"RsVFzUK1UX+VEHUEQp0FRmtm5QHqZQnYTaAnQNsSfwrgA87PgBTYOUhrDB7lxC4PGCxLsgKzs9L+uRPr",
-	"z5/Z4+HyEkqfwJpZklBtQ77rLzSH05azbJsPLq2Du3v+mfOUkBjwp6pGLLs6kenSOGZeyCpkKnL1d7Fe",
-	"L1unpytTTy6DF/LM0GO3oHSw/j91fc6xtjpasYPgOUVqHzUoHro9IjvKgY8fuq7GdZD6s4JYx8djea6N",
-	"rF5Y6+XOvAXRIIGlrdwRl0uwBtETTeROeHvnzpAKRGPdUsU2W0MKzoobVCiGdbTGRcETTfwIUgRZk6Qq",
-	"0SyFG/33g9P9Mms2uDNWHPE3TNxcFlK89Gbl23DkM+FeSRxqnIUbJiCciRviItzBStwCtRZcL7kcC3wp",
-	"39G9XjpTdinFP0vQN0bW9s9KrhgHtOqXU7Fp0GRg2HqtYA0uFhiHLgmIDWd6651jgSLBGlcXnF/oK6Dl",
-	"CynWLBa9j8vM9Y1Da5GMIrstiM4dSrOp3ubEA9xun6+lRKMgUhA/YOlRTQu30qoxxrpQ1DgUr6SxpA6a",
-	"VBcKAK+5t1AwscHJ6gwWVyjXA741lLtfBN/3iMiXwZTGqBXWfKdKbIPJonF6JgjVBQj7ll3dvtD+V7o6",
-	"unZpXSztY3RhXSjJuTV+ESa5FF0t2S2D3ZL44cRslWw22xaaUXwJD0r7tQ6yS1hDhvIHDq78wLmHObZg",
-	"638KgBLKiU1+qAHKGewQ1td2uD+ugt6yDbWisbVDOjadUwu7pRaUVPpOFtINhrsZrF6huasROyqM7vx4",
-	"VxECUIZyFyGHh9NOJ7KJgwfJNvviSUXayK4dqqRpAZ1IxCkhNpA1fWkw4NM+9/TOd//MjU9AQlEc56j2",
-	"Hh8jTIn7UXllvmrWay9lJu4bIbWitICVlDcZIzH/IhPa0JrWuTVrZ7tkjMKmWvHMe2bHjMEnHZyVsONl",
-	"a6C3e4mA96BsQWrX7xZD6WLoxAUxyxe5WMbhUoEZ9m82In/QVz6YJZSKCGkOB3/ahBork8QXiisf3Vzl",
-	"SxLTkO2D0iys5y53UtFIUnNaQFfD5G6JHcRSJr82qoiKFmTjy9gPzpvLw6WTHp/rOpSk61Vp4xJk6ibj",
-	"FOIP1FVPlTv6ArV4Z+F3FTG6IpE0iD6vcCZfATOYa6oQ5rPl6R6nnCbFxGzxxKk2V75mFQnZUm18tL5l",
-	"o53buhufQpaU2ExXOYbHZLdlHHx2wKI94aiZwafebnPFUwJ2oM2lgeqaYZO4uqHA0H4sYQYqbF8C7vKI",
-	"sg8HiIqFwExbuSYElF1qM3lGuT1Ie/JrAw2O0PmXFQascOSVhXgLC5F63jzF+H9WlWZamzmo6Qh1G/0K",
-	"jkDNkUPWiclruslqqGu6yScerZdyOV2KNieBd7IaHKTAdX/ZFqlgqPjosJQR3B/7lMuZN3OKA0acNDqo",
-	"TR+SOcdkvBsNylrY/AHK78HX+GkmXzBKEAxvbU9c3ncDJgtl/7C9A6xWcPUNGYXB7bPsvk/XeWAZ8slt",
-	"0f9q7wQgrdkDmhKwic4E1jiHolHM7D8UW6iC50Y1Ky4aX8DoogUO8/bXbv2tMfXi/t45Xj65EAzYxQtZ",
-	"VdSVMl28v0yCyucLl3CuQdiNnC+ef/P0m29d/sJs3bpnDvizCoxihftl4x02yxzuEFouX/wA5m0YYveu",
-	"ayl0rDhf04Ybf6moLRynXfOFs1+00z/3Li/RU6D+VRLn87hpqoqq/eJ8cWUXhNv2mkzVAuBF6E++j8fi",
-	"Z/ta2IdOHOgNdi2hnTSBMPWnR9vG2kg8FAWhEcuhIBG25P39fQY7mY3kcWTP/VkJHHxxdC0xRfjSPSc0",
-	"5CWpKF1QdGg0j1Hm1vNvh0u/wdH7Xpb7T4airhTrvs+NRjVw/9mOaA9Lh5G+AXP2Gyvvs6fzBwh5876q",
-	"QjD8A5h4p5oqWoFLYp7/lJfNzCdBzTZKpvNY15Gibpng/7AO/vnEjNAp9NHxz2DqMAEuOJ9Evz3ldqye",
-	"xPsnkQGzilcSHIzsPQQnKfgHkKHp7YQAcN2PpCKN6yAQjvg35NJ7C6y0VpF1W9tyhWWojPBRa8Y5WQGJ",
-	"pg6Ky9iB6UQyAu3y9KjiAsVphlAx4nJGyzJPpYuyDGh3fmN8CcF32/brZNgeNRb7lLg+Si4N+MIjKcFN",
-	"xPfrBGfWDxhgPr0kPcEkbR8GS9o2qeaNaBeMoXm6xFvcJybO8LL4o3JBBOZBNJlrtwgCd0y7vN40Z/gX",
-	"Toz/L81cOR7vyc35vOocXjBNr4SPDOuI8lftkElLpgv9x8kzBc3O0HH3yWdbOiP3buQZ9+sBXIFuCGxJ",
-	"4dsFIKu6tkR26qm1W2ov2nLcpLAAi2TlwewVDgvYDQqHMRjdKFeLfJzpN17b3fAOVYKbUDSPLNjeBEdQ",
-	"8HTWVY1xbXDF0oWXJLLBs6dLUtE7V+337dOnTzMgxWv4CETPHgaSq9OYwEGbYx6fAlfO0avwWHgun3UC",
-	"NFBVbB0y0mp1YO391LZo3bFSuHkYOKtt69BdGV/tia5pYX98ntRLxiLKzAbbMvujuMzHXrry9z1hZe7c",
-	"2kGXgwVaJK4p14BlNudekI93TMggLZKDBruTcnns9m8A6n7tv6GbDZS+0sNldAzNHSn/JL/aqV21KMVR",
-	"pwTrEHKU2rnQr0OBz4Ty8b0rHqR8wvz/51WQ1zhf9c8fXf/41ORXJfRVCf3BldBdxR/i6GBKh9CuImKe",
-	"8gm6ZjJU2L3tYuT9G55JrRKmhK6kND3H84T6uWtDiSloJZM+XvMRVFF1k3fF3VW/tF2YxwdLq1nbkuI+",
-	"cuyrY//wFJ55727g+Jz17s/Ga72Lx/PgHU4fbk65G377PMmuwJW+zY+euPuF+1NHryY6Vz5qPCWi6wGs",
-	"M6h3yCVd0wKNz5ZxSNaclXNIS3y6HoHDNOE0YpyqnSNQaCdSWvlx1oZOxmLkVbhb8AjCY3DX+VFlRoq2",
-	"ITGiGBlSIl7aPkbEz6TICQU6ch0do03mQvqjEqmKQKUonUMt63t+Qr75YKg6Jd+kVfUIbQZ19Y+WrbNg",
-	"HMs31gROCNHH6zXdnBKtSWEjgtV+aeOjIdX66N1BjIWNM9A6nXuITpMdOCzXH2nVa7r5jHVMh8Cb2LzF",
-	"1JGpl4HoGO3drnJ0yiX4TV9TK19DW19TK1+jWkhU61HzCxPmEiZJj8omHCFPj80i/NGl6tdswddswVe5",
-	"+qXJ1d8RMh968hQLmPcl6l0dvhuGitJX7jGhgrx7//YNcd2+kqD4k0PF5P79d3XFF58LDw7QsK2JjYd7",
-	"l9Pl3K/BFNuAxSfatVDIqZDXfr5DymN8TfOLqus+Gts4hvJYt8PzgY50NisGmNHhOm8f525c0NWncMSH",
-	"3ZIRbzy5avzpK2TnwDa2pFLsTREBucWAHul/7bsJ/U+iDXG5CdJ0Co+sirITP82X1Uh4LokdCqUXzq/f",
-	"Xb2NeVkgT+yAJ/EeXJ8ifqpWjuZOvI8/UmXOLH7/7Poy9hAyuAPKsOYJsqq5A3aBXX3rtZbod4NpR91/",
-	"vnCUw2wgxASpjk10xiv+fwo2d7wr0dR2Jf+th3FgvB+aeayEhfoyYuFzfbpDKU2foYxKIdWfmWTmifVC",
-	"Nol5SNE/GjUiAge4y1JEdY0OcvwiGsr5nlB3McMRJrQEi80NXEeDEYH+y/76WqrYSuGzFOtj3zl4THo4",
-	"JES0Wa9Jtdg4RJKpu299onAeuoyl7Xbm0+iC8wGZPidqUOBnYkrHJkZZRLVtjlwr86jlBwm0OOa1kpVv",
-	"TjFpCiXWIOY5YnbiSYp9j0/noMgYYneZuz51DCpPlYscdq06JIw/uX78PVfb5uG/Pd2N6J1vnCofu0G+",
-	"g3+GMsm4f+1rU3mEYIj23QoOFg/qfiPokQfVNZE+eb+BpF81Gl4fgBo37V/r77pW8m4/5Ri+V/KOQXlZ",
-	"+W6N05FyO2hKLJ5AKLo1z2qxechBcbsnLOwNxZO7ec1jAxS8TMD3RzkNS/W+LfOoXOUgcUWz/pK4tTBB",
-	"675x6e/aJ6ir008w5FH4AUTZ+1rDidCJfhHiUdGqQVijOunUr8GQ2B1zHl5fUM5XtLjJMnK3bf8ZgPaF",
-	"EUejheoBmKPyW2i9ubwBcQIhYODOnG3NMQHkPGL9Ry4mizw1qPANjsXjddRoG8q0XZMjRMO9LXNMF3ot",
-	"pHs5Acvlv2zy+M0dDuJueC7ChfbwEYG8QBt01Pmc18VbFyr0B5valXIfSACV38hVGHHCxh/YN08euU7c",
-	"7zl+O+YwHuf3sWoGX3dApcvn6lw1o13VEN68cEFabUxvNsqf3m5P4DEmm/wCxM0UMtNmc04dJ23mfvrZ",
-	"akNvt2PW97ClnOtpbHdnFvc/3/9vAAAA///1GCDEY5IAAA==",
+	"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",
 }
 
 // GetSwagger returns the content of the embedded swagger specification file
