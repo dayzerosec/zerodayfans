@@ -49,7 +49,8 @@ func getFeedEntries() []commafeed.Entry {
 		// which will allow commafeed to return only the entries that will make the cut for the feed
 		if len(mergedEntries) > config.Cfg.MaxEntries {
 			mergedEntries = mergedEntries[:config.Cfg.MaxEntries]
-			newerThan, err := time.Parse(time.RFC3339, mergedEntries[len(mergedEntries)-1].Date)
+
+			newerThan, err := commafeed_util.PrimitiveToTime(commafeed_util.TimePrimitive(mergedEntries[len(mergedEntries)-1].Date))
 			if err != nil {
 				log.Printf("[MaxEntries] Failed to parse Date: %s: %v", mergedEntries[len(mergedEntries)-1].Date, err)
 			} else {
@@ -128,7 +129,7 @@ func Generate(forceRebuild bool) bool {
 	var rawFeed []*enrichment.EnrichedData
 	feed := createEmptyFeed()
 
-	feed.Updated, err = time.Parse(time.RFC3339, entries[0].Date)
+	feed.Updated, err = commafeed_util.PrimitiveToTime(commafeed_util.TimePrimitive(entries[0].Date))
 	if err != nil {
 		log.Printf("ERROR: [generate] Failed to parse updated date: %s: %v", entries[0].Date, err)
 		return false

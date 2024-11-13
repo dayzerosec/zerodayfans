@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/dayzerosec/zerodayfans/pkg/cache"
 	"github.com/dayzerosec/zerodayfans/pkg/commafeed"
+	"github.com/dayzerosec/zerodayfans/pkg/commafeed_util"
 	"github.com/dayzerosec/zerodayfans/pkg/config"
 	"log"
 	"net/url"
@@ -128,7 +129,7 @@ func getBaseEnrichment(target string) (out *EnrichedData, err error) {
 
 func doFeedEnrichment(enriched *EnrichedData, e commafeed.Entry) {
 	var err error
-	enriched.Feed.Date, err = time.Parse(time.RFC3339, e.Date)
+	enriched.Feed.Date, err = commafeed_util.PrimitiveToTime(commafeed_util.TimePrimitive(e.Date))
 	if err != nil {
 		log.Printf("Error parsing date: %v", err)
 	}

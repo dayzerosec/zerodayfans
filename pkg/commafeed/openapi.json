@@ -1347,6 +1347,10 @@
           "admin" : {
             "type" : "boolean",
             "description" : "user is admin"
+          },
+          "lastForceRefresh" : {
+            "type" : "number",
+            "description" : "user last force refresh"
           }
         },
         "description" : "User information"
@@ -1531,11 +1535,11 @@
             "format" : "int32"
           },
           "date" : {
-            "type" : "string",
+            "type" : "number",
             "description" : "entry publication date"
           },
           "insertedDate" : {
-            "type" : "string",
+            "type" : "number",
             "description" : "entry insertion date in the database"
           },
           "feedId" : {
@@ -1654,11 +1658,11 @@
             "format" : "int32"
           },
           "lastRefresh" : {
-            "type" : "string",
+            "type" : "number",
             "description" : "last time the feed was refreshed"
           },
           "nextRefresh" : {
-            "type" : "string",
+            "type" : "number",
             "description" : "next time the feed refresh is planned, null if refresh is already queued"
           },
           "feedUrl" : {
@@ -1688,7 +1692,7 @@
             "format" : "int32"
           },
           "newestItemTime" : {
-            "type" : "string",
+            "type" : "number",
             "description" : "date of the newest item"
           },
           "filter" : {
@@ -1931,7 +1935,7 @@
         "description" : "Subscription request"
       },
       "ServerInfo" : {
-        "required" : [ "allowRegistrations", "demoAccountEnabled", "gitCommit", "smtpEnabled", "treeReloadInterval", "version", "websocketEnabled", "websocketPingInterval" ],
+        "required" : [ "allowRegistrations", "demoAccountEnabled", "forceRefreshCooldownDuration", "gitCommit", "smtpEnabled", "treeReloadInterval", "version", "websocketEnabled", "websocketPingInterval" ],
         "type" : "object",
         "properties" : {
           "announcement" : {
@@ -1965,12 +1969,16 @@
           "treeReloadInterval" : {
             "type" : "integer",
             "format" : "int64"
+          },
+          "forceRefreshCooldownDuration" : {
+            "type" : "integer",
+            "format" : "int64"
           }
         },
         "description" : "Server infos"
       },
       "Settings" : {
-        "required" : [ "customContextMenu", "externalLinkIconDisplayMode", "language", "markAllAsReadConfirmation", "mobileFooter", "readingMode", "readingOrder", "scrollMarks", "scrollMode", "scrollSpeed", "sharingSettings", "showRead", "starIconDisplayMode", "unreadCountFavicon", "unreadCountTitle" ],
+        "required" : [ "customContextMenu", "entriesToKeepOnTopWhenScrolling", "externalLinkIconDisplayMode", "language", "markAllAsReadConfirmation", "mobileFooter", "readingMode", "readingOrder", "scrollMarks", "scrollMode", "scrollSpeed", "sharingSettings", "showRead", "starIconDisplayMode", "unreadCountFavicon", "unreadCountTitle" ],
         "type" : "object",
         "properties" : {
           "language" : {
@@ -2012,6 +2020,11 @@
             "type" : "string",
             "description" : "whether to scroll to the selected entry",
             "enum" : [ "always,never,if_needed" ]
+          },
+          "entriesToKeepOnTopWhenScrolling" : {
+            "type" : "integer",
+            "description" : "number of entries to keep above the selected entry when scrolling",
+            "format" : "int32"
           },
           "starIconDisplayMode" : {
             "type" : "string",
