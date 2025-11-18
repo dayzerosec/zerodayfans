@@ -115,7 +115,7 @@ func Generate(forceRebuild bool) bool {
 	newTopper, _ := enrichment.Enrich(entries[0])
 
 	if !forceRebuild && oldTopper != nil {
-		if newTopper.Page.Url == oldTopper.Page.Url {
+		if newTopper.Page.Url == oldTopper.Page.Url || newTopper.Feed.Date == oldTopper.Feed.Date {
 			log.Println("No updates to feed")
 			return false
 		}
